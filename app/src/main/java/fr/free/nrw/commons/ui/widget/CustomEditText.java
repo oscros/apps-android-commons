@@ -14,6 +14,7 @@ import android.widget.EditText;
  */
 @SuppressLint("AppCompatCustomView")
 public class CustomEditText extends EditText {
+    public boolean[] testCoverage;
 
     private Drawable drawableRight;
     private Drawable drawableLeft;
@@ -58,7 +59,7 @@ public class CustomEditText extends EditText {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        boolean[] testCoverage = new boolean[18];
+        testCoverage = new boolean[18];
         Rect bounds;
         testCoverage[0] = true;
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
