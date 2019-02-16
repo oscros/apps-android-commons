@@ -13,7 +13,7 @@ import fr.free.nrw.commons.utils.model.NetworkConnectionType;
 
 public class NetworkUtils {
 
-    public static boolean branchCoverage[] = new boolean[20];
+    public static boolean branchCoverage[] = new boolean[21];
 
     /**
      * https://developer.android.com/training/monitoring-device-state/connectivity-monitoring#java
