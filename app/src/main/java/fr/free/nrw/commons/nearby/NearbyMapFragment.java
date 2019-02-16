@@ -390,8 +390,12 @@ public class NearbyMapFragment extends DaggerFragment {
      * Sets click listeners of FABs, and 2 bottom sheets
      */
     private void setListeners() {
+        boolean[] ccn = new boolean[19];
+        ccn[0] = true;
+
         fabPlus.setOnClickListener(view -> {
             if (applicationKvStore.getBoolean("login_skipped", false)) {
+                ccn[1] = true;
                 // prompt the user to login
                 new AlertDialog.Builder(getContext())
                         .setMessage(R.string.login_alert_message)
@@ -404,24 +408,33 @@ public class NearbyMapFragment extends DaggerFragment {
                         })
                         .show();
             }else {
+                ccn[2] = true;
                 animateFAB(isFabOpen);
             }
         });
 
         bottomSheetDetails.setOnClickListener(view -> {
             if (bottomSheetDetailsBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                ccn[3] = true;
+
                 bottomSheetDetailsBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             } else {
+                ccn[4] = true;
+
                 bottomSheetDetailsBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
 
         fabRecenter.setOnClickListener(view -> {
             if (curLatLng != null) {
+                ccn[5] = true;
+
                 mapView.getMapAsync(mapboxMap -> {
                     CameraPosition position;
 
                     if (ViewUtil.isPortrait(getActivity())){
+                        ccn[6] = true;
+
                         position = new CameraPosition.Builder()
                                 .target(isBottomListSheetExpanded ?
                                         new LatLng(curLatLng.getLatitude()- CAMERA_TARGET_SHIFT_FACTOR_PORTRAIT,
@@ -432,6 +445,8 @@ public class NearbyMapFragment extends DaggerFragment {
                                         :mapboxMap.getCameraPosition().zoom) // Same zoom level
                                 .build();
                     }else {
+                        ccn[7] = true;
+
                         position = new CameraPosition.Builder()
                                 .target(isBottomListSheetExpanded ?
                                         new LatLng(curLatLng.getLatitude()- CAMERA_TARGET_SHIFT_FACTOR_LANDSCAPE,
@@ -447,6 +462,9 @@ public class NearbyMapFragment extends DaggerFragment {
                             .newCameraPosition(position), 1000);
 
                 });
+            } else {
+                ccn[8] = true;
+
             }
         });
 
@@ -460,12 +478,21 @@ public class NearbyMapFragment extends DaggerFragment {
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 if (slideOffset >= 0) {
+                    ccn[9] = true;
+
                     transparentView.setAlpha(slideOffset);
                     if (slideOffset == 1) {
+                        ccn[10] = true;
+
                         transparentView.setClickable(true);
                     } else if (slideOffset == 0) {
+                        ccn[11] = true;
+
                         transparentView.setClickable(false);
                     }
+                } else {
+                    ccn[12] = true;
+
                 }
             }
         });
@@ -475,7 +502,12 @@ public class NearbyMapFragment extends DaggerFragment {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
                 if (newState == BottomSheetBehavior.STATE_EXPANDED) {
+                    ccn[13] = true;
+
                     bottomSheetDetailsBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+                } else {
+                    ccn[14] = true;
+
                 }
             }
 
@@ -488,6 +520,10 @@ public class NearbyMapFragment extends DaggerFragment {
         // Remove button text if they exceed 1 line or if internal layout has not been built
         // Only need to check for directions button because it is the longest
         if (directionsButtonText.getLineCount() > 1 || directionsButtonText.getLineCount() == 0) {
+            ccn[15] = true;
+
+            ccn[16] = true;
+
             wikipediaButtonText.setVisibility(View.GONE);
             wikidataButtonText.setVisibility(View.GONE);
             commonsButtonText.setVisibility(View.GONE);
@@ -496,16 +532,26 @@ public class NearbyMapFragment extends DaggerFragment {
         title.setOnLongClickListener(view -> {
                     Utils.copy("place",title.getText().toString(),getContext());
                     Toast.makeText(getContext(),"Text copied to clipboard",Toast.LENGTH_SHORT).show();
+            for (int i = 0; i < ccn.length; i++) {
+                System.out.println("branch id: " + i + " taken: " + ccn[i]);
+            }
                     return true;
                 }
         );
         title.setOnClickListener(view -> {
             if (bottomSheetDetailsBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                ccn[17] = true;
+
                 bottomSheetDetailsBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
             } else {
+                ccn[18] = true;
+
                 bottomSheetDetailsBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
+        for (int i = 0; i < ccn.length; i++) {
+            System.out.println("branch id: " + i + " taken: " + ccn[i]);
+        }
     }
 
     /**
