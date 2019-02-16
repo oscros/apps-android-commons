@@ -532,6 +532,9 @@ public class NearbyMapFragment extends DaggerFragment {
         title.setOnLongClickListener(view -> {
                     Utils.copy("place",title.getText().toString(),getContext());
                     Toast.makeText(getContext(),"Text copied to clipboard",Toast.LENGTH_SHORT).show();
+            for (int i = 0; i < ccn.length; i++) {
+                System.out.println("branch id: " + i + " taken: " + ccn[i]);
+            }
                     return true;
                 }
         );
