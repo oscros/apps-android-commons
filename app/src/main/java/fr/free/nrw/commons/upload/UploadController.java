@@ -40,6 +40,7 @@ public class UploadController {
     private SessionManager sessionManager;
     private Context context;
     private BasicKvStore defaultKvStore;
+    public boolean[] CCN;
 
     public interface ContributionUploadProgress {
         void onUploadStarted(Contribution contribution);
@@ -108,26 +109,41 @@ public class UploadController {
     @SuppressLint("StaticFieldLeak")
     private void startUpload(final Contribution contribution, final ContributionUploadProgress onComplete) {
         //Set creator, desc, and license
-
+        CCN = new boolean[35];
+        CCN[0] = true;
         // If author name is enabled and set, use it
         if (defaultKvStore.getBoolean("useAuthorName", false)) {
+            CCN[1] = true;
             String authorName = defaultKvStore.getString("authorName", "");
             contribution.setCreator(authorName);
+        } else {
+            CCN[23] = true;
         }
 
         if (TextUtils.isEmpty(contribution.getCreator())) {
+            CCN[2] = true;
             Account currentAccount = sessionManager.getCurrentAccount();
             if (currentAccount == null) {
+                CCN[3] = true;
                 Timber.d("Current account is null");
                 ViewUtil.showLongToast(context, context.getString(R.string.user_not_logged_in));
                 sessionManager.forceLogin(context);
                 return;
             }
+            else {
+                CCN[24] = true;
+            }
             contribution.setCreator(sessionManager.getAuthorName());
+        }
+        else {
+            CCN[25] = true;
         }
 
         if (contribution.getDescription() == null) {
+            CCN[4] = true;
             contribution.setDescription("");
+        } else {
+            CCN[26] = true;
         }
 
         String license = defaultKvStore.getString(Prefs.DEFAULT_LICENSE, Prefs.Licenses.CC_BY_SA_3);
@@ -144,25 +160,39 @@ public class UploadController {
                 long length;
                 ContentResolver contentResolver = context.getContentResolver();
                 try {
+                    CCN[5] = true;
                     if (contribution.getDataLength() <= 0) {
+                        CCN[6] = true;
                         Timber.d("UploadController/doInBackground, contribution.getLocalUri():" + contribution.getLocalUri());
                         AssetFileDescriptor assetFileDescriptor = contentResolver
                                 .openAssetFileDescriptor(Uri.fromFile(new File(contribution.getLocalUri().getPath())), "r");
                         if (assetFileDescriptor != null) {
+                            CCN[7] = true;
                             length = assetFileDescriptor.getLength();
                             if (length == -1) {
+                                CCN[8] = true;
                                 // Let us find out the long way!
                                 length = countBytes(contentResolver
                                         .openInputStream(contribution.getLocalUri()));
+                            } else {
+                                CCN[27] = true;
                             }
                             contribution.setDataLength(length);
+                        } else {
+                            CCN[28] = true;
                         }
                     }
+                    else {
+                        CCN[29] = true;
+                    }
                 } catch (IOException e) {
+                    CCN[34] = true;
                     Timber.e(e, "IO Exception: ");
                 } catch (NullPointerException e) {
+                    CCN[9] = true;
                     Timber.e(e, "Null Pointer Exception: ");
                 } catch (SecurityException e) {
+                    CCN[10] = true;
                     Timber.e(e, "Security Exception: ");
                 }
 
@@ -170,32 +200,53 @@ public class UploadController {
                 Boolean imagePrefix = false;
 
                 if (mimeType == null || TextUtils.isEmpty(mimeType) || mimeType.endsWith("*")) {
+                    CCN[11] = true;
+                    CCN[12] = true;
+                    CCN[13] = true;
                     mimeType = contentResolver.getType(contribution.getLocalUri());
+                }
+                else {
+                    CCN[30] = true;
                 }
 
                 if (mimeType != null) {
+                    CCN[14] = true;
                     contribution.setTag("mimeType", mimeType);
                     imagePrefix = mimeType.startsWith("image/");
                     Timber.d("MimeType is: %s", mimeType);
+                }else {
+                    CCN[31] = true;
                 }
 
                 if (imagePrefix && contribution.getDateCreated() == null) {
+                    CCN[15] = true;
+                    CCN[16] = true;
                     Timber.d("local uri   " + contribution.getLocalUri());
                     Cursor cursor = contentResolver.query(contribution.getLocalUri(),
                             new String[]{MediaStore.Images.ImageColumns.DATE_TAKEN}, null, null, null);
                     if (cursor != null && cursor.getCount() != 0 && cursor.getColumnCount() != 0) {
+                        CCN[17] = true;
+                        CCN[18] = true;
+                        CCN[19] = true;
                         cursor.moveToFirst();
                         Date dateCreated = new Date(cursor.getLong(0));
                         Date epochStart = new Date(0);
                         if (dateCreated.equals(epochStart) || dateCreated.before(epochStart)) {
+                            CCN[20] = true;
+                            CCN[21] = true;
                             // If date is incorrect (1st second of unix time) then set it to the current date
                             dateCreated = new Date();
+                        }else {
+                            CCN[32] = true;
                         }
                         contribution.setDateCreated(dateCreated);
                         cursor.close();
                     } else {
+                        CCN[22] = true;
                         contribution.setDateCreated(new Date());
                     }
+                }else {
+                    CCN[33] = true;
                 }
                 return contribution;
             }
