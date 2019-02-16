@@ -109,7 +109,7 @@ public class UploadController {
     @SuppressLint("StaticFieldLeak")
     private void startUpload(final Contribution contribution, final ContributionUploadProgress onComplete) {
         //Set creator, desc, and license
-        CCN = new boolean[34];
+        CCN = new boolean[35];
         CCN[0] = true;
         // If author name is enabled and set, use it
         if (defaultKvStore.getBoolean("useAuthorName", false)) {
@@ -186,7 +186,7 @@ public class UploadController {
                         CCN[29] = true;
                     }
                 } catch (IOException e) {
-                    CCN[8] = true;
+                    CCN[34] = true;
                     Timber.e(e, "IO Exception: ");
                 } catch (NullPointerException e) {
                     CCN[9] = true;
