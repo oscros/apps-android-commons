@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,7 +36,9 @@ public class NearbyControllerTest2 {
 
         when(nearbyPlaces.radiusExpander(any(LatLng.class), any(String.class), any(boolean.class))).thenReturn(places);
 
-        nearbyController.loadAttractionsFromLocation(curLatLng, latLangToSearchAround, true, true);
+        NearbyController.NearbyPlacesInfo nearbyPlacesInfo = nearbyController.loadAttractionsFromLocation(curLatLng, latLangToSearchAround, true, true);
+
+        assertEquals(nearbyPlacesInfo.placeList, places);
     }
 
    @Test
@@ -47,8 +50,10 @@ public class NearbyControllerTest2 {
        NearbyController nearbyController = new NearbyController(nearbyPlaces);
 
        when(nearbyPlaces.radiusExpander(any(LatLng.class), any(String.class), any(boolean.class))).thenReturn(null);
-       nearbyController.loadAttractionsFromLocation(curLatLng, latLangToSearchAround, true, true);
-   }
+       NearbyController.NearbyPlacesInfo nearbyPlacesInfo = nearbyController.loadAttractionsFromLocation(curLatLng, latLangToSearchAround, true, true);
+
+       assertNull(nearbyPlacesInfo);
+    }
 
 
    @Test
@@ -57,8 +62,10 @@ public class NearbyControllerTest2 {
        NearbyPlaces nearbyPlaces = mock(NearbyPlaces.class);
        NearbyController nearbyController = new NearbyController(nearbyPlaces);
 
-       nearbyController.loadAttractionsFromLocation(curLatLng, null, true, true);
-   }
+       NearbyController.NearbyPlacesInfo nearbyPlacesInfo = nearbyController.loadAttractionsFromLocation(curLatLng, null, true, true);
+
+       assertNull(nearbyPlacesInfo);
+    }
 
    @Test
    public void testCurLatLngNull() throws IOException {
@@ -74,7 +81,9 @@ public class NearbyControllerTest2 {
 
        when(nearbyPlaces.radiusExpander(any(LatLng.class), any(String.class), any(boolean.class))).thenReturn(places);
 
-       nearbyController.loadAttractionsFromLocation(null, latLangToSearchAround, false, true);
+       NearbyController.NearbyPlacesInfo nearbyPlacesInfo = nearbyController.loadAttractionsFromLocation(null, latLangToSearchAround, false, true);
+
+       assertEquals(nearbyPlacesInfo.placeList, places);
    }
 
     @Test
@@ -91,7 +100,8 @@ public class NearbyControllerTest2 {
 
         when(nearbyPlaces.radiusExpander(any(LatLng.class), any(String.class), any(boolean.class))).thenReturn(places);
 
-        nearbyController.loadAttractionsFromLocation(null, latLangToSearchAround, false, false);
+        NearbyController.NearbyPlacesInfo nearbyPlacesInfo = nearbyController.loadAttractionsFromLocation(null, latLangToSearchAround, false, false);
+        assertEquals(nearbyPlacesInfo.placeList, places);
     }
 
     @Test
@@ -106,7 +116,9 @@ public class NearbyControllerTest2 {
 
         when(nearbyPlaces.radiusExpander(any(LatLng.class), any(String.class), any(boolean.class))).thenReturn(places);
 
-        nearbyController.loadAttractionsFromLocation(curLatLng, latLangToSearchAround, true, true);
+        NearbyController.NearbyPlacesInfo nearbyPlacesInfo = nearbyController.loadAttractionsFromLocation(curLatLng, latLangToSearchAround, true, true);
+
+        assertNull(nearbyPlacesInfo);
     }
 
     @Test
@@ -131,7 +143,9 @@ public class NearbyControllerTest2 {
 
         when(nearbyPlaces.radiusExpander(any(LatLng.class), any(String.class), any(boolean.class))).thenReturn(places);
 
-        nearbyController.loadAttractionsFromLocation(curLatLng, latLangToSearchAround, true, true);
-    }
+        NearbyController.NearbyPlacesInfo nearbyPlacesInfo = nearbyController.loadAttractionsFromLocation(curLatLng, latLangToSearchAround, true, true);
 
+        assertEquals(nearbyPlacesInfo.boundaryCoordinates[0].getLatitude(), places.get(2).getLocation().getLatitude(), 0.0000001);
+
+    }
 }
