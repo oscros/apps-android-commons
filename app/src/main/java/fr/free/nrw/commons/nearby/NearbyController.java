@@ -47,17 +47,30 @@ public class NearbyController {
      * and boundary coordinates of current Place List
      */
     public NearbyPlacesInfo loadAttractionsFromLocation(LatLng curLatLng, LatLng latLangToSearchAround, boolean returnClosestResult, boolean checkingAroundCurrentLocation) throws IOException {
+        boolean branchCoverage[] = new boolean[20];
 
         Timber.d("Loading attractions near %s", latLangToSearchAround);
         NearbyPlacesInfo nearbyPlacesInfo = new NearbyPlacesInfo();
 
         if (latLangToSearchAround == null) {
+            branchCoverage[0] = true;
             Timber.d("Loading attractions nearby, but curLatLng is null");
+            int index = 0;
+            while(index < branchCoverage.length){
+                System.out.println("Branch-ID " + index + " " + branchCoverage[index]);
+                index++;
+            }
+
             return null;
+        }
+        else{
+            branchCoverage[1] = true;
         }
         List<Place> places = nearbyPlaces.radiusExpander(latLangToSearchAround, Locale.getDefault().getLanguage(), returnClosestResult);
 
         if (null != places && places.size() > 0) {
+            branchCoverage[2] = true;
+            branchCoverage[3] = true;
             LatLng[] boundaryCoordinates = {places.get(0).location,   // south
                     places.get(0).location, // north
                     places.get(0).location, // west
@@ -65,22 +78,40 @@ public class NearbyController {
 
 
             if (curLatLng != null) {
+                branchCoverage[4] = true;
                 Timber.d("Sorting places by distance...");
                 final Map<Place, Double> distances = new HashMap<>();
                 for (Place place : places) {
+                    branchCoverage[5] = true;
                     distances.put(place, computeDistanceBetween(place.location, curLatLng));
                     // Find boundaries with basic find max approach
                     if (place.location.getLatitude() < boundaryCoordinates[0].getLatitude()) {
+                        branchCoverage[6] = true;
                         boundaryCoordinates[0] = place.location;
                     }
+                    else{
+                        branchCoverage[7] = true;
+                    }
                     if (place.location.getLatitude() > boundaryCoordinates[1].getLatitude()) {
+                        branchCoverage[8] = true;
                         boundaryCoordinates[1] = place.location;
                     }
+                    else{
+                        branchCoverage[9] = true;
+                    }
                     if (place.location.getLongitude() < boundaryCoordinates[2].getLongitude()) {
+                        branchCoverage[10] = true;
                         boundaryCoordinates[2] = place.location;
                     }
+                    else{
+                        branchCoverage[11] = true;
+                    }
                     if (place.location.getLongitude() > boundaryCoordinates[3].getLongitude()) {
+                        branchCoverage[12] = true;
                         boundaryCoordinates[3] = place.location;
+                    }
+                    else{
+                        branchCoverage[13] = true;
                     }
                 }
                 Collections.sort(places,
@@ -94,13 +125,28 @@ public class NearbyController {
             nearbyPlacesInfo.placeList = places;
             nearbyPlacesInfo.boundaryCoordinates = boundaryCoordinates;
             if (!returnClosestResult && checkingAroundCurrentLocation) {
+                branchCoverage[14] = true;
                 // Do not update searched radius, if controller is used for nearby card notification
                 searchedRadius = nearbyPlaces.radius;
                 currentLocation = curLatLng;
             }
+            else{
+                branchCoverage[15] = true;
+            }
+            int index = 0;
+            while(index < branchCoverage.length){
+                System.out.println("Branch-ID " + index + " " + branchCoverage[index]);
+                index++;
+            }
             return nearbyPlacesInfo;
         }
         else {
+            branchCoverage[16] = true;
+            int index = 0;
+            while(index < branchCoverage.length){
+                System.out.println("Branch-ID " + index + " " + branchCoverage[index]);
+                index++;
+            }
             return null;
         }
     }
