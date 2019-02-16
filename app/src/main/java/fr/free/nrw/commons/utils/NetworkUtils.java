@@ -13,6 +13,8 @@ import fr.free.nrw.commons.utils.model.NetworkConnectionType;
 
 public class NetworkUtils {
 
+    public static boolean branchCoverage[] = new boolean[21];
+
     /**
      * https://developer.android.com/training/monitoring-device-state/connectivity-monitoring#java
      * Check if internet connection is established.
@@ -36,39 +38,66 @@ public class NetworkUtils {
     static NetworkConnectionType getNetworkType(Context context) {
         TelephonyManager telephonyManager = (TelephonyManager) context.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
         if (telephonyManager == null) {
+            branchCoverage[0] = true;
             return NetworkConnectionType.UNKNOWN;
+        }
+        else{
+            branchCoverage[1] = true;
         }
 
         NetworkInfo networkInfo = getNetworkInfo(context);
         if (networkInfo == null) {
+            branchCoverage[2] = true;
             return NetworkConnectionType.UNKNOWN;
+        }
+        else{
+            branchCoverage[3] = true;
         }
 
         int network = networkInfo.getType();
         if (network == ConnectivityManager.TYPE_WIFI) {
+            branchCoverage[4] = true;
             return NetworkConnectionType.WIFI;
+        }
+        else{
+            branchCoverage[5] = true;
         }
 
         int mobileNetwork = telephonyManager.getNetworkType();
         switch (mobileNetwork) {
             case TelephonyManager.NETWORK_TYPE_GPRS:
+                branchCoverage[6] = true;
             case TelephonyManager.NETWORK_TYPE_EDGE:
+                branchCoverage[7] = true;
             case TelephonyManager.NETWORK_TYPE_CDMA:
+                branchCoverage[8] = true;
             case TelephonyManager.NETWORK_TYPE_1xRTT:
+                branchCoverage[9] = true;
                 return NetworkConnectionType.TWO_G;
             case TelephonyManager.NETWORK_TYPE_HSDPA:
+                branchCoverage[10] = true;
             case TelephonyManager.NETWORK_TYPE_UMTS:
+                branchCoverage[11] = true;
             case TelephonyManager.NETWORK_TYPE_HSUPA:
+                branchCoverage[12] = true;
             case TelephonyManager.NETWORK_TYPE_HSPA:
+                branchCoverage[13] = true;
             case TelephonyManager.NETWORK_TYPE_EHRPD:
+                branchCoverage[14] = true;
             case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                branchCoverage[15] = true;
             case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                branchCoverage[16] = true;
             case TelephonyManager.NETWORK_TYPE_EVDO_B:
+                branchCoverage[17] = true;
                 return NetworkConnectionType.THREE_G;
             case TelephonyManager.NETWORK_TYPE_LTE:
+                branchCoverage[18] = true;
             case TelephonyManager.NETWORK_TYPE_HSPAP:
+                branchCoverage[19] = true;
                 return NetworkConnectionType.FOUR_G;
             default:
+                branchCoverage[20] = true;
                 return NetworkConnectionType.UNKNOWN;
         }
     }

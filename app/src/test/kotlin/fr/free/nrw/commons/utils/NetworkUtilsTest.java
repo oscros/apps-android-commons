@@ -97,6 +97,14 @@ public class NetworkUtilsTest {
         NetworkConnectionType networkType = NetworkUtils.getNetworkType(mockContext);
 
         assertEquals(networkType, NetworkConnectionType.WIFI);
+
+        System.out.println("testWifiNetwork");
+        int index = 0;
+        while(index < NetworkUtils.branchCoverage.length){
+            System.out.println("Branch-ID: " + index + " " + NetworkUtils.branchCoverage[index]);
+            index++;
+        }
+        System.out.println();
     }
 
     @Test
@@ -123,6 +131,14 @@ public class NetworkUtilsTest {
         NetworkConnectionType networkType = NetworkUtils.getNetworkType(mockContext);
 
         assertEquals(networkType, NetworkConnectionType.TWO_G);
+
+        System.out.println("testCellular2GNetwork");
+        int index = 0;
+        while(index < NetworkUtils.branchCoverage.length){
+            System.out.println("Branch-ID: " + index + " " + NetworkUtils.branchCoverage[index]);
+            index++;
+        }
+        System.out.println();
     }
 
     @Test
@@ -149,6 +165,14 @@ public class NetworkUtilsTest {
         NetworkConnectionType networkType = NetworkUtils.getNetworkType(mockContext);
 
         assertEquals(networkType, NetworkConnectionType.THREE_G);
+
+        System.out.println("testCellular3GNetwork");
+        int index = 0;
+        while(index < NetworkUtils.branchCoverage.length){
+            System.out.println("Branch-ID: " + index + " " + NetworkUtils.branchCoverage[index]);
+            index++;
+        }
+        System.out.println();
     }
 
     @Test
@@ -175,5 +199,13 @@ public class NetworkUtilsTest {
         NetworkConnectionType networkType = NetworkUtils.getNetworkType(mockContext);
 
         assertEquals(networkType, NetworkConnectionType.FOUR_G);
+
+        System.out.println("testCellular4GNetwork");
+        int index = 0;
+        while(index < NetworkUtils.branchCoverage.length){
+            System.out.println("Branch-ID: " + index + " " + NetworkUtils.branchCoverage[index]);
+            index++;
+        }
+        System.out.println();
     }
 }
