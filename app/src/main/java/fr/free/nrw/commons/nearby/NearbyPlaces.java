@@ -42,7 +42,7 @@ public class NearbyPlaces {
      * @return list of places obtained
      * @throws IOException if query fails
      */
-    List<Place> radiusExpander(LatLng curLatLng, String lang, boolean returnClosestResult) throws IOException {
+    public List<Place> radiusExpander(LatLng curLatLng, String lang, boolean returnClosestResult) throws IOException {
 
         int minResults;
         double maxRadius;
