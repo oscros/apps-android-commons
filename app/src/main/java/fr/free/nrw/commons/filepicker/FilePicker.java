@@ -310,7 +310,7 @@ public class FilePicker implements Constants {
     }
 
     public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, @NonNull FilePicker.Callbacks callbacks) {
-        testCoverage = new boolean[19];
+        testCoverage = new boolean[21];
         boolean isHandledPickedFile = (requestCode & RequestCodes.FILE_PICKER_IMAGE_IDENTIFICATOR) > 0;
         testCoverage[0] = true;
         if (isHandledPickedFile) {
@@ -361,7 +361,15 @@ public class FilePicker implements Constants {
                     }
                 }
             }
+            else {
+                testCoverage[19] = true;
+            }
         }
+        else {
+            testCoverage[20] = true;
+        }
+        for(int i = 0; i < testCoverage.length; i++)
+            System.out.println("Branch " + i + " reached: " + testCoverage[i]);
     }
 
     public static List<UploadableFile> handleExternalImagesPicked(Intent data, Activity activity) {
