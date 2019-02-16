@@ -389,7 +389,7 @@ public class NearbyMapFragment extends DaggerFragment {
     /**
      * Sets click listeners of FABs, and 2 bottom sheets
      */
-    private void setListeners() {
+    public void setListeners() {
         fabPlus.setOnClickListener(view -> {
             if (applicationKvStore.getBoolean("login_skipped", false)) {
                 // prompt the user to login
