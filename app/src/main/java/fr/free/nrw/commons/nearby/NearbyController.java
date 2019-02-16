@@ -47,7 +47,7 @@ public class NearbyController {
      * and boundary coordinates of current Place List
      */
     public NearbyPlacesInfo loadAttractionsFromLocation(LatLng curLatLng, LatLng latLangToSearchAround, boolean returnClosestResult, boolean checkingAroundCurrentLocation) throws IOException {
-        boolean branchCoverage[] = new boolean[20];
+        boolean branchCoverage[] = new boolean[17];
 
         Timber.d("Loading attractions near %s", latLangToSearchAround);
         NearbyPlacesInfo nearbyPlacesInfo = new NearbyPlacesInfo();
