@@ -28,6 +28,7 @@ import static fr.free.nrw.commons.filepicker.PickedFiles.singleFileList;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "ResultOfMethodCallIgnored"})
 public class FilePicker implements Constants {
+    public static boolean[] testCoverage;
 
     private static final boolean SHOW_GALLERY_IN_CHOOSER = false;
     private static final String KEY_PHOTO_URI = "photo_uri";
@@ -309,33 +310,53 @@ public class FilePicker implements Constants {
     }
 
     public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, @NonNull FilePicker.Callbacks callbacks) {
+        testCoverage = new boolean[19];
         boolean isHandledPickedFile = (requestCode & RequestCodes.FILE_PICKER_IMAGE_IDENTIFICATOR) > 0;
+        testCoverage[0] = true;
         if (isHandledPickedFile) {
+            testCoverage[1] = true;
             requestCode &= ~RequestCodes.SOURCE_CHOOSER;
             if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY ||
                     requestCode == RequestCodes.TAKE_PICTURE ||
                     requestCode == RequestCodes.CAPTURE_VIDEO ||
                     requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) {
+                testCoverage[2] = true;
+                testCoverage[3] = true;
+                testCoverage[4] = true;
+                testCoverage[5] = true;
                 if (resultCode == Activity.RESULT_OK) {
+                    testCoverage[6] = true;
                     if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS && !isPhoto(data)) {
+                        testCoverage[7] = true;
+                        testCoverage[8] = true;
                         onPictureReturnedFromDocuments(data, activity, callbacks);
                     } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY && !isPhoto(data)) {
+                        testCoverage[9] = true;
+                        testCoverage[10] = true;
                         onPictureReturnedFromGallery(data, activity, callbacks);
                     } else if (requestCode == RequestCodes.TAKE_PICTURE) {
+                        testCoverage[11] = true;
                         onPictureReturnedFromCamera(activity, callbacks);
                     } else if (requestCode == RequestCodes.CAPTURE_VIDEO) {
+                        testCoverage[12] = true;
                         onVideoReturnedFromCamera(activity, callbacks);
                     } else if (isPhoto(data)) {
+                        testCoverage[13] = true;
                         onPictureReturnedFromCamera(activity, callbacks);
                     } else {
+                        testCoverage[14] = true;
                         onPictureReturnedFromDocuments(data, activity, callbacks);
                     }
                 } else {
+                    testCoverage[15] = true;
                     if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) {
+                        testCoverage[16] = true;
                         callbacks.onCanceled(FilePicker.ImageSource.DOCUMENTS, restoreType(activity));
                     } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY) {
+                        testCoverage[17] = true;
                         callbacks.onCanceled(FilePicker.ImageSource.GALLERY, restoreType(activity));
                     } else {
+                        testCoverage[18] = true;
                         callbacks.onCanceled(FilePicker.ImageSource.CAMERA_IMAGE, restoreType(activity));
                     }
                 }
