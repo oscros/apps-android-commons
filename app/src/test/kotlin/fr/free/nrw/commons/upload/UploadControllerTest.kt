@@ -50,5 +50,15 @@ class UploadControllerTest {
     fun startUpload() {
         val contribution = mock(Contribution::class.java)
         uploadController!!.startUpload(contribution)
+
+        println("startUpload")
+        val CCN = uploadController!!.CCN
+        var x = 0
+
+        while (x < CCN.size)
+        {
+            println("Branch id: " + x + " taken: " + CCN[x])
+            x++
+        }
     }
 }
