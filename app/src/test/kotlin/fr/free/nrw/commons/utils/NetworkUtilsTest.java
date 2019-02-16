@@ -176,4 +176,91 @@ public class NetworkUtilsTest {
 
         assertEquals(networkType, NetworkConnectionType.FOUR_G);
     }
+
+
+    /**
+     * Tests the branch when the parameter "telephonyManager" is set to null.
+     */
+    @Test
+    public void testNullParameterTelephonyManager(){
+        Context mockContext = mock(Context.class);
+        Application mockApplication = mock(Application.class);
+        ConnectivityManager mockConnectivityManager = mock(ConnectivityManager.class);
+        NetworkInfo mockNetworkInfo = mock(NetworkInfo.class);
+
+        when(mockNetworkInfo.getType())
+                .thenReturn(ConnectivityManager.TYPE_WIFI);
+
+        when(mockConnectivityManager.getActiveNetworkInfo())
+                .thenReturn(mockNetworkInfo);
+
+        when(mockApplication.getSystemService(Context.CONNECTIVITY_SERVICE))
+                .thenReturn(mockConnectivityManager);
+
+        when(mockApplication.getSystemService(Context.TELEPHONY_SERVICE))
+                .thenReturn(null);
+
+        when(mockContext.getApplicationContext()).thenReturn(mockApplication);
+
+        NetworkConnectionType networkType = NetworkUtils.getNetworkType(mockContext);
+
+        assertEquals(networkType, NetworkConnectionType.UNKNOWN);
+    }
+
+    /**
+     * Tests the branch when the parameter NetworkInfo is set to null.
+     */
+    @Test
+    public void testNullParameterNetworkInfo(){
+        Context mockContext = mock(Context.class);
+        Application mockApplication = mock(Application.class);
+        ConnectivityManager mockConnectivityManager = mock(ConnectivityManager.class);
+        NetworkInfo mockNetworkInfo = mock(NetworkInfo.class);
+
+        when(mockNetworkInfo.getType())
+                .thenReturn(ConnectivityManager.TYPE_WIFI);
+
+        when(mockConnectivityManager.getActiveNetworkInfo())
+                .thenReturn(mockNetworkInfo);
+
+        when(mockApplication.getSystemService(Context.CONNECTIVITY_SERVICE))
+                .thenReturn(null);
+
+        when(mockApplication.getSystemService(Context.TELEPHONY_SERVICE))
+                .thenReturn(mock(TelephonyManager.class));
+
+        when(mockContext.getApplicationContext()).thenReturn(mockApplication);
+
+        NetworkConnectionType networkType = NetworkUtils.getNetworkType(mockContext);
+
+        assertEquals(networkType, NetworkConnectionType.UNKNOWN);
+    }
+
+    /**
+     * Test the branch in the switch(mobileNetwork) for the default value.
+     */
+    @Test
+    public void testMobileNetworkDefault(){
+        Context mockContext = mock(Context.class);
+        Application mockApplication = mock(Application.class);
+        ConnectivityManager mockConnectivityManager = mock(ConnectivityManager.class);
+        NetworkInfo mockNetworkInfo = mock(NetworkInfo.class);
+        when(mockNetworkInfo.getType())
+                .thenReturn(-100);
+
+        when(mockConnectivityManager.getActiveNetworkInfo())
+                .thenReturn(mockNetworkInfo);
+
+        when(mockApplication.getSystemService(Context.CONNECTIVITY_SERVICE))
+                .thenReturn(mockConnectivityManager);
+
+        when(mockApplication.getSystemService(Context.TELEPHONY_SERVICE))
+                .thenReturn(mock(TelephonyManager.class));
+
+        when(mockContext.getApplicationContext()).thenReturn(mockApplication);
+
+        NetworkConnectionType networkType = NetworkUtils.getNetworkType(mockContext);
+
+        assertEquals(networkType, NetworkConnectionType.UNKNOWN);
+    }
 }
