@@ -33,7 +33,7 @@ import timber.log.Timber;
  */
 
 public class ImageUtils {
-
+    public static boolean[] testCoverage;
     public static final int IMAGE_DARK = 1;
     static final int IMAGE_BLURRY = 1 << 1;
     public static final int IMAGE_DUPLICATE = 1 << 2; //4
@@ -116,9 +116,16 @@ public class ImageUtils {
     }
 
     private static boolean checkIfImageIsDark(Bitmap bitmap) {
+        testCoverage = new boolean[22];
         if (bitmap == null) {
+            testCoverage[0] = true;
             Timber.e("Expected bitmap was null");
+            for (int i = 0; i < testCoverage.length; i++) {
+              System.out.println("branch id: " + i + " taken: " + testCoverage[i]);
+            }
             return true;
+        }else {
+          testCoverage[1] = true;
         }
 
         int bitmapWidth = bitmap.getWidth();
@@ -132,17 +139,47 @@ public class ImageUtils {
         double mediumBrightPixelThreshold = 0.3 * allPixelsCount;
 
         for (int x = 0; x < bitmapWidth; x++) {
+            testCoverage[2] = true;
             for (int y = 0; y < bitmapHeight; y++) {
+                testCoverage[3] = true;
                 int pixel = bitmap.getPixel(x, y);
                 int r = Color.red(pixel);
                 int g = Color.green(pixel);
                 int b = Color.blue(pixel);
 
-                int secondMax = r > g ? r : g;
-                double max = (secondMax > b ? secondMax : b) / 255.0;
+                int secondMax;
+                if (r > g) {
+                  secondMax = r;
+                  testCoverage[4] = true;
+                }else {
+                  secondMax = g;
+                  testCoverage[5] = true;
+                }
+                double max;
+                if (secondMax > b) {
+                  max = secondMax / 255.0;
+                  testCoverage[6] = true;
+                }else {
+                  max = b / 255.0;
+                  testCoverage[7] = true;
+                }
 
-                int secondMin = r < g ? r : g;
-                double min = (secondMin < b ? secondMin : b) / 255.0;
+                int secondMin;
+                if (r < g) {
+                  secondMin = r;
+                  testCoverage[8] = true;
+                }else {
+                  secondMin = g;
+                  testCoverage[9] = true;
+                }
+                double min;
+                if (secondMin < b) {
+                  min = secondMin / 255.0;
+                  testCoverage[10] = true;
+                }else {
+                  min = b / 255.0;
+                  testCoverage[11] = true;
+                }
 
                 double luminance = ((max + min) / 2.0) * 100;
 
@@ -150,17 +187,31 @@ public class ImageUtils {
                 int mediumBrightnessLuminance = 26;
 
                 if (luminance < highBrightnessLuminance) {
+                    testCoverage[12] = true;
                     if (luminance > mediumBrightnessLuminance) {
                         numberOfMediumBrightnessPixels++;
+                        testCoverage[13] = true;
+                    }else {
+                      testCoverage[14] = true;
                     }
                 } else {
+                    testCoverage[15] = true;
                     numberOfBrightPixels++;
                 }
 
                 if (numberOfBrightPixels >= brightPixelThreshold || numberOfMediumBrightnessPixels >= mediumBrightPixelThreshold) {
+                    testCoverage[16] = true;
+                    for (int i = 0; i < testCoverage.length; i++) {
+                      System.out.println("branch id: " + i + " taken: " + testCoverage[i]);
+                    }
                     return false;
+                }else {
+                  testCoverage[17] = true;
                 }
             }
+        }
+        for (int i = 0; i < testCoverage.length; i++) {
+          System.out.println("branch id: " + i + " taken: " + testCoverage[i]);
         }
         return true;
     }
