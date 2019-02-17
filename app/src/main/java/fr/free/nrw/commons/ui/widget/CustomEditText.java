@@ -14,7 +14,6 @@ import android.widget.EditText;
  */
 @SuppressLint("AppCompatCustomView")
 public class CustomEditText extends EditText {
-    public boolean[] testCoverage;
 
     private Drawable drawableRight;
     private Drawable drawableLeft;
@@ -59,32 +58,24 @@ public class CustomEditText extends EditText {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        testCoverage = new boolean[18];
         Rect bounds;
-        testCoverage[0] = true;
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            testCoverage[1] = true;
             actionX = (int) event.getX();
             actionY = (int) event.getY();
             if (drawableBottom != null
                     && drawableBottom.getBounds().contains(actionX, actionY)) {
-                testCoverage[2] = true;
-                testCoverage[3] = true;
                 clickListener.onClick(DrawableClickListener.DrawablePosition.BOTTOM);
                 return super.onTouchEvent(event);
             }
 
             if (drawableTop != null
                     && drawableTop.getBounds().contains(actionX, actionY)) {
-                testCoverage[4] = true;
-                testCoverage[5] = true;
                 clickListener.onClick(DrawableClickListener.DrawablePosition.TOP);
                 return super.onTouchEvent(event);
             }
 
             // this works for left since container shares 0,0 origin with bounds
             if (drawableLeft != null) {
-                testCoverage[6] = true;
                 bounds = null;
                 bounds = drawableLeft.getBounds();
 
@@ -95,30 +86,24 @@ public class CustomEditText extends EditText {
                 y = actionY;
 
                 if (!bounds.contains(actionX, actionY)) {
-                    testCoverage[7] = true;
                     // Gives the +20 area for tapping.
                     x = (int) (actionX - extraTapArea);
                     y = (int) (actionY - extraTapArea);
 
                     if (x <= 0) {
-                        testCoverage[8] = true;
                         x = actionX;
                     }
                     if (y <= 0) {
-                        testCoverage[9] = true;
                         y = actionY;
                     }
 
                     // Creates square from the smallest value
                     if (x < y) {
-                        testCoverage[10] = true;
                         y = x;
                     }
                 }
 
                 if (bounds.contains(x, y) && clickListener != null) {
-                    testCoverage[11] = true;
-                    testCoverage[12] = true;
                     clickListener
                             .onClick(DrawableClickListener.DrawablePosition.LEFT);
                     event.setAction(MotionEvent.ACTION_CANCEL);
@@ -128,7 +113,6 @@ public class CustomEditText extends EditText {
             }
 
             if (drawableRight != null) {
-                testCoverage[13] = true;
 
                 bounds = null;
                 bounds = drawableRight.getBounds();
@@ -159,7 +143,6 @@ public class CustomEditText extends EditText {
                  */
 
                 if (x <= 0) {
-                    testCoverage[14] = true;
                     x += extraTapArea;
                 }
 
@@ -169,14 +152,11 @@ public class CustomEditText extends EditText {
                  */
 
                 if (y <= 0) {
-                    testCoverage[15] = true;
                     y = actionY;
                 }
 
                 // If drawble bounds contains the x and y points then move ahead.
                 if (bounds.contains(x, y) && clickListener != null) {
-                    testCoverage[16] = true;
-                    testCoverage[17] = true;
                     clickListener
                             .onClick(DrawableClickListener.DrawablePosition.RIGHT);
                     event.setAction(MotionEvent.ACTION_CANCEL);
