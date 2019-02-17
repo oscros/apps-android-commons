@@ -1,17 +1,17 @@
 package fr.free.nrw.commons.filepicker
 
 import android.app.Activity
+import android.content.ClipData
 import android.content.Intent
-import org.junit.After
+import android.net.Uri
+import com.nhaarman.mockito_kotlin.doNothing
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 
 class FilePickerTest {
-
-    private var requestCode: Int = 1
-    private var resultCode: Int = 2
 
     @Mock
     private lateinit var data: Intent
@@ -19,6 +19,10 @@ class FilePickerTest {
     private lateinit var activity: Activity
     @Mock
     private lateinit var callbacks: FilePicker.Callbacks
+    @Mock
+    private lateinit var uri: Uri
+    @Mock
+    private lateinit var clipData: ClipData
 
     @Before
     @Throws(Exception::class)
@@ -26,16 +30,16 @@ class FilePickerTest {
         MockitoAnnotations.initMocks(this)
     }
 
-    @After
-    @Throws(Exception::class)
-    fun tearDown() {
-        for(value in FilePicker.testCoverage)
-            println(value)
-    }
-
     @Test
-    fun handleActivityResult() {
-        FilePicker.handleActivityResult(requestCode, resultCode, data, activity, callbacks)
+    fun handleActivityResultOKFromDocuments() {
+        val requestCode = 2924
+        val resultCode = -1
 
+        Mockito.`when`(data.data).thenReturn(uri)
+        Mockito.`when`(data.clipData).thenReturn(clipData)
+        Mockito.`when`(callbacks.onImagesPicked())
+
+        FilePicker.handleActivityResult(requestCode, resultCode, data, activity, callbacks)
+        Mockito.verify(FilePicker.onPictureReturnedFromDocuments(data, activity, callbacks))
     }
 }
