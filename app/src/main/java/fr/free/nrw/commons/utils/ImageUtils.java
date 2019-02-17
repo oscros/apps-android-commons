@@ -115,7 +115,7 @@ public class ImageUtils {
         return distance >= 1000;
     }
 
-    private static boolean checkIfImageIsDark(Bitmap bitmap) {
+    public static boolean checkIfImageIsDark(Bitmap bitmap) {
         if (bitmap == null) {
             Timber.e("Expected bitmap was null");
             return true;
