@@ -387,9 +387,9 @@ public class NearbyMapFragment extends DaggerFragment {
     }
 
     /**
-     * Sets click listeners of FABs, and 2 bottom sheets
+     * Set listener for fabPlus element
      */
-    private void setListeners() {
+    private void setFabPlusListener() {
         fabPlus.setOnClickListener(view -> {
             if (applicationKvStore.getBoolean("login_skipped", false)) {
                 // prompt the user to login
@@ -407,7 +407,12 @@ public class NearbyMapFragment extends DaggerFragment {
                 animateFAB(isFabOpen);
             }
         });
+    }
 
+    /**
+     * Set listener for bottomSheetDetails element
+     */
+    private void setBottomSheetDetails() {
         bottomSheetDetails.setOnClickListener(view -> {
             if (bottomSheetDetailsBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
                 bottomSheetDetailsBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -415,7 +420,12 @@ public class NearbyMapFragment extends DaggerFragment {
                 bottomSheetDetailsBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
+    }
 
+    /**
+     * Set listener for fabCenter element.
+     */
+    private void setFabCenterListener() {
         fabRecenter.setOnClickListener(view -> {
             if (curLatLng != null) {
                 mapView.getMapAsync(mapboxMap -> {
@@ -449,7 +459,12 @@ public class NearbyMapFragment extends DaggerFragment {
                 });
             }
         });
+    }
 
+    /**
+     * Set listener for bottomSheetDetailsBehaviour element.
+     */
+    private void setBottomSheetDetailsBehaviourListener() {
         bottomSheetDetailsBehavior.setBottomSheetCallback(new BottomSheetBehavior
                 .BottomSheetCallback() {
             @Override
@@ -469,6 +484,38 @@ public class NearbyMapFragment extends DaggerFragment {
                 }
             }
         });
+    }
+
+    /**
+     * Set listeners for title element.
+     */
+    private void setTitleListener() {
+        title.setOnLongClickListener(view -> {
+                    Utils.copy("place",title.getText().toString(),getContext());
+                    Toast.makeText(getContext(),"Text copied to clipboard",Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+        );
+        title.setOnClickListener(view -> {
+            if (bottomSheetDetailsBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+                bottomSheetDetailsBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+            } else {
+                bottomSheetDetailsBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            }
+        });
+    }
+
+    /**
+     * Sets click listeners of FABs, and 2 bottom sheets
+     */
+    private void setListeners() {
+        setFabPlusListener();
+
+        setBottomSheetDetails();
+
+        setFabCenterListener();
+
+        setBottomSheetDetailsBehaviourListener();
 
         bottomSheetListBehavior.setBottomSheetCallback(new BottomSheetBehavior
                 .BottomSheetCallback() {
@@ -493,19 +540,7 @@ public class NearbyMapFragment extends DaggerFragment {
             commonsButtonText.setVisibility(View.GONE);
             directionsButtonText.setVisibility(View.GONE);
         }
-        title.setOnLongClickListener(view -> {
-                    Utils.copy("place",title.getText().toString(),getContext());
-                    Toast.makeText(getContext(),"Text copied to clipboard",Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-        );
-        title.setOnClickListener(view -> {
-            if (bottomSheetDetailsBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-                bottomSheetDetailsBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            } else {
-                bottomSheetDetailsBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            }
-        });
+        setTitleListener();
     }
 
     /**
