@@ -48,4 +48,16 @@ class CustomEditTextTest {
 
         Mockito.verify(mListener).onClick(CustomEditText.DrawableClickListener.DrawablePosition.BOTTOM)
     }
+
+    @Test
+    fun onTouchEventTestDrawableLeft() {
+        mCustomEditText.setCompoundDrawables(mDrawable, null, null, null)
+
+        Mockito.`when`(mDrawable.bounds).thenReturn(mRect)
+        Mockito.`when`(mRect.contains(Mockito.anyInt(), Mockito.anyInt()))
+                .thenReturn(true)
+
+        mCustomEditText.setDrawableClickListener(mListener)
+        mCustomEditText.onTouchEvent(mEvent)
+    }
 }
