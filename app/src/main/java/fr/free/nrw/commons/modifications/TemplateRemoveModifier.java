@@ -31,6 +31,7 @@ public class TemplateRemoveModifier extends PageModifier {
 
     @Override
     public String doModification(String pageName, String pageContents) {
+        boolean[] coverage = new boolean[20];
         String templateRawName = params.optString(PARAM_TEMPLATE_NAME);
         // Wikitext title normalizing rules. Spaces and _ equivalent
         // They also 'condense' - any number of them reduce to just one (just like HTML)
@@ -42,6 +43,7 @@ public class TemplateRemoveModifier extends PageModifier {
         Matcher matcher = templateStartPattern.matcher(pageContents);
 
         while (matcher.find()) {
+            coverage[0] = true;
             int braceCount = 1;
             int startIndex = matcher.start();
             int curIndex = matcher.end();
@@ -49,32 +51,54 @@ public class TemplateRemoveModifier extends PageModifier {
             Matcher closeMatch = PATTERN_TEMPLATE_CLOSE.matcher(pageContents);
 
             while (curIndex < pageContents.length()) {
+                coverage[1] = true;
                 boolean openFound = openMatch.find(curIndex);
                 boolean closeFound = closeMatch.find(curIndex);
 
+                if (!closeFound) {
+                    coverage[2] = true;
+                }
+
+                boolean openClose = (openMatch.start() < closeMatch.start());
+
+                if (openClose) {
+                  coverage[3]
+                }
+
                 if (openFound && (!closeFound || openMatch.start() < closeMatch.start())) {
+                    coverage[4] = true;
                     braceCount++;
                     curIndex = openMatch.end();
                 } else if (closeFound) {
+                    coverage[5] = true;
                     braceCount--;
                     curIndex = closeMatch.end();
                 } else if (braceCount > 0) {
                     // The template never closes, so...remove nothing
+                    coverage[6] = true;
                     curIndex = startIndex;
                     break;
+                } else {
+                    coverage[7] = true;
                 }
 
                 if (braceCount == 0) {
+                    coverage[8] = true;
                     // The braces have all been closed!
                     break;
+                } else {
+                    coverage[9] = true;
                 }
             }
 
             // Strip trailing whitespace
             while (curIndex < pageContents.length()) {
+                coverage[10] = true;
                 if (pageContents.charAt(curIndex) == ' ' || pageContents.charAt(curIndex) == '\n') {
+                    coverage[11] = true;
                     curIndex++;
                 } else {
+                    coverage[12] = true;
                     break;
                 }
             }
@@ -83,7 +107,9 @@ public class TemplateRemoveModifier extends PageModifier {
             pageContents = pageContents.substring(0, startIndex) + pageContents.substring(curIndex);
             matcher = templateStartPattern.matcher(pageContents);
         }
-
+        for (int i = 0; i < coverage.length; i++) {
+                System.out.println("branch id: " + i + " taken: " + coverage[i]);
+        }
         return pageContents;
     }
 
