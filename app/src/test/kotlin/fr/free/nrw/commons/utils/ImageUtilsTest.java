@@ -12,13 +12,17 @@ import static org.mockito.Mockito.when;
 
 public class ImageUtilsTest{
 
-
+ /**
+  * Edge case which should be handled and return true
+  */
   @Test
   public void checkIfImageIsDarkTestNull(){
-    //Edge case which should be handled and return true
     assertTrue(checkIfImageIsDark(null));
   }
 
+  /**
+  * Edge case which tests the function when there is zero pixels
+  */
   @Test
   public void checkIfImageIsDarkTestZeroes(){
     Bitmap bitmap = mock(Bitmap.class);
@@ -27,6 +31,9 @@ public class ImageUtilsTest{
     assertTrue(checkIfImageIsDark(bitmap));
   }
 
+  /**
+  * A completely black image is definetly dark
+  */
   @Test
   public void checkIfImageIsDarkTestBlackImage(){
     Bitmap bitmap = mock(Bitmap.class);
