@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.Intent
 import android.net.Uri
-import io.mockk.MockKAnnotations
-import io.mockk.every
+import android.preference.PreferenceManager
+import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockkStatic
+import io.mockk.impl.annotations.RelaxedMockK
 import org.junit.Before
 import org.junit.Test
 
@@ -15,9 +15,9 @@ class FilePickerTest {
 
     @MockK
     private lateinit var data: Intent
-    @MockK
+    @RelaxedMockK
     private lateinit var activity: Activity
-    @MockK
+    @RelaxedMockK
     private lateinit var callbacks: FilePicker.Callbacks
     @MockK
     private lateinit var uri: Uri
@@ -37,16 +37,21 @@ class FilePickerTest {
         val requestCode = 2924
         val resultCode = -1
 
+        val mList= mockk<List<UploadableFile>>(relaxed = true)
+
         mockkStatic(PickedFiles::class)
+        mockkStatic(PreferenceManager::class)
 
         every { data.data  } returns uri
         every { data.clipData } returns clipData
-
-      //  Mockito.`when`(data.data).thenReturn(uri)
-      //  Mockito.`when`(data.clipData).thenReturn(clipData)
-      //  Mockito.`when`(PickedFiles.pickedExistingPicture(activity, uri)).thenReturn(uploadableFile)
+        every { PickedFiles.pickedExistingPicture(any<Activity>(), any<Uri>()) } returns uploadableFile
+        every { callbacks.onImagesPicked(mList, FilePicker.ImageSource.DOCUMENTS, any<Int>()) } just Runs
+        every { PreferenceManager.getDefaultSharedPreferences(activity).getInt("type", 0) } returns 1
 
         FilePicker.handleActivityResult(requestCode, resultCode, data, activity, callbacks)
-      //  Mockito.verify(FilePicker.onPictureReturnedFromDocuments(data, activity, callbacks))
+
+        verify{
+            PickedFiles.pickedExistingPicture(any<Activity>(), any<Uri>())
+        }
     }
 }
