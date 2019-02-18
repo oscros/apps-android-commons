@@ -1,19 +1,24 @@
 package fr.free.nrw.commons.modifications;
 
-import org.junit.Assert.assertTrue;
-import org.junit.Assert.assertFalse;
 import org.junit.Test;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotSame;
 import fr.free.nrw.commons.commons.modifications.TemplateRemoveModifier;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatcher.any;
 
-public class TemplateRemoveModifierTest(){
+public class TemplateRemoveModifierTest{
 
   @Test
-  public void TemplateRemoveModifierTest() {
-    TemplateRemoveModifier trm = mock(TemplateRemoveModifier.class);
+  public void TemplateRemoveModifierTestNoMatch{
+    TemplateRemoveModifier trm = new TemplateRemoveModifier("template");
+    String result = trm.doModification("", "hej");
+    assertTrue(result == "hej");
+  }
 
+  @Test
+  public void TemplateRemoveModifierTestWhitespaceRemoved{
+    TemplateRemoveModifier trm = new TemplateRemoveModifier("template");
+    String result = trm.doModification("", "template  ");
+    assertNotSame(result, "template  ");
   }
 }
