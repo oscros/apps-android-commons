@@ -49,7 +49,15 @@ public class NetworkUtils {
             return NetworkConnectionType.WIFI;
         }
 
-        int mobileNetwork = telephonyManager.getNetworkType();
+        return (getNetworkConnectionType(telephonyManager.getNetworkType()));
+    }
+
+    /**
+     * Function that takes an mobileNetwork int and returns its NetworkConnectionType.
+     * @param mobileNetwork
+     * @return NetworkConnectionType
+     */
+    private static NetworkConnectionType getNetworkConnectionType(int mobileNetwork){
         switch (mobileNetwork) {
             case TelephonyManager.NETWORK_TYPE_GPRS:
             case TelephonyManager.NETWORK_TYPE_EDGE:
@@ -72,6 +80,7 @@ public class NetworkUtils {
                 return NetworkConnectionType.UNKNOWN;
         }
     }
+
 
     /**
      * Extracted private method to get nullable network info
