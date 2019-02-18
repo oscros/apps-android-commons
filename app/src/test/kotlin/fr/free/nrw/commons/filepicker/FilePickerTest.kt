@@ -4,13 +4,17 @@ import android.app.Activity
 import android.content.ClipData
 import android.content.Intent
 import android.net.Uri
-import com.nhaarman.mockito_kotlin.doNothing
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
+import org.powermock.api.mockito.PowerMockito
+import org.powermock.modules.junit4.PowerMockRunner
 
+@RunWith(PowerMockRunner::class)
+@PrepareForTest({PickedFiles::class})
 class FilePickerTest {
 
     @Mock
@@ -23,6 +27,8 @@ class FilePickerTest {
     private lateinit var uri: Uri
     @Mock
     private lateinit var clipData: ClipData
+    @Mock
+    private lateinit var uploadableFile: UploadableFile
 
     @Before
     @Throws(Exception::class)
@@ -35,9 +41,11 @@ class FilePickerTest {
         val requestCode = 2924
         val resultCode = -1
 
+        PowerMockito.mockStatic(PickedFiles::class.java)
+
         Mockito.`when`(data.data).thenReturn(uri)
         Mockito.`when`(data.clipData).thenReturn(clipData)
-        Mockito.`when`(callbacks.onImagesPicked())
+        Mockito.`when`(PickedFiles.pickedExistingPicture(activity, uri)).thenReturn(uploadableFile)
 
         FilePicker.handleActivityResult(requestCode, resultCode, data, activity, callbacks)
         Mockito.verify(FilePicker.onPictureReturnedFromDocuments(data, activity, callbacks))
