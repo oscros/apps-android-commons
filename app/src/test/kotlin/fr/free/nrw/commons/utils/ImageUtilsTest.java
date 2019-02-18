@@ -28,15 +28,6 @@ public class ImageUtilsTest{
   }
 
   @Test
-  public void checkIfImageIsDarkTestWhiteImage(){
-    Bitmap bitmap = mock(Bitmap.class);
-    when(bitmap.getWidth()).thenReturn(10);
-    when(bitmap.getHeight()).thenReturn(10);
-    when(bitmap.getPixel(anyInt(), anyInt())).thenReturn(-1);
-    assertFalse(checkIfImageIsDark(bitmap));
-  }
-
-  @Test
   public void checkIfImageIsDarkTestBlackImage(){
     Bitmap bitmap = mock(Bitmap.class);
     when(bitmap.getWidth()).thenReturn(20);
