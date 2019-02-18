@@ -54,4 +54,21 @@ class FilePickerTest {
             PickedFiles.pickedExistingPicture(any<Activity>(), any<Uri>())
         }
     }
+
+    @Test
+    fun handleActivityResultPickFromDocumentsCancel() {
+        val requestCode = 2924
+        val resultCode = 0
+
+        mockkStatic(PreferenceManager::class)
+
+        every { callbacks.onCanceled(FilePicker.ImageSource.DOCUMENTS, any<Int>()) } just Runs
+        every { PreferenceManager.getDefaultSharedPreferences(activity).getInt("type", 0) } returns 1
+
+        FilePicker.handleActivityResult(requestCode, resultCode, data, activity, callbacks)
+
+        verify {
+            callbacks.onCanceled(FilePicker.ImageSource.DOCUMENTS, any<Int>())
+        }
+    }
 }
