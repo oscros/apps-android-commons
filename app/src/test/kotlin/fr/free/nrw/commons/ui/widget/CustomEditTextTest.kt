@@ -36,6 +36,10 @@ class CustomEditTextTest {
         mCustomEditText = CustomEditText(mContext, mAttrs)
     }
 
+    /**
+     * Tests if the method onTouchEvent behaves correctly when only a bottom drawable
+     * is given.
+     */
     @Test
     fun onTouchEventTestDrawableBottom() {
         mCustomEditText.setCompoundDrawables(null, null, null, mDrawable)
@@ -50,6 +54,10 @@ class CustomEditTextTest {
         Mockito.verify(mListener).onClick(CustomEditText.DrawableClickListener.DrawablePosition.BOTTOM)
     }
 
+    /**
+     * Tests if the method onTouchEvent behaves correctly when only a right drawable
+     * is given.
+     */
     @Test
     fun onTouchEventTestDrawableRight() {
         mCustomEditText.setCompoundDrawables(null, null, mDrawable, null)
