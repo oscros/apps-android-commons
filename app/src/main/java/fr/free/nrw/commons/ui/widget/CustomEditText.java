@@ -59,7 +59,6 @@ public class CustomEditText extends EditText {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Rect bounds;
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             actionX = (int) event.getX();
             actionY = (int) event.getY();
@@ -77,92 +76,107 @@ public class CustomEditText extends EditText {
 
             // this works for left since container shares 0,0 origin with bounds
             if (drawableLeft != null) {
-                bounds = null;
-                bounds = drawableLeft.getBounds();
-
-                int x, y;
-                int extraTapArea = (int) (13 * getResources().getDisplayMetrics().density + 0.5);
-
-                x = actionX;
-                y = actionY;
-
-                if (!bounds.contains(actionX, actionY)) {
-                    // Gives the +20 area for tapping.
-                    x = (int) (actionX - extraTapArea);
-                    y = (int) (actionY - extraTapArea);
-
-                    if (x <= 0)
-                        x = actionX;
-                    if (y <= 0)
-                        y = actionY;
-
-                    // Creates square from the smallest value
-                    if (x < y) {
-                        y = x;
-                    }
-                }
-
-                if (bounds.contains(x, y) && clickListener != null) {
-                    clickListener
-                            .onClick(DrawableClickListener.DrawablePosition.LEFT);
-                    event.setAction(MotionEvent.ACTION_CANCEL);
+                if(!drawLeft(drawableLeft.getBounds(), event)){
                     return false;
-
                 }
             }
 
             if (drawableRight != null) {
-
-                bounds = null;
-                bounds = drawableRight.getBounds();
-
-                int x, y;
-                int extraTapArea = 13;
-
-                /*
-                  IF USER CLICKS JUST OUT SIDE THE RECTANGLE OF THE DRAWABLE
-                  THAN ADD X AND SUBTRACT THE Y WITH SOME VALUE SO THAT AFTER
-                  CALCULATING X AND Y CO-ORDINATE LIES INTO THE DRAWBABLE
-                  BOUND. - this process help to increase the tappable area of
-                  the rectangle.
-                 */
-                x = (int) (actionX + extraTapArea);
-                y = (int) (actionY - extraTapArea);
-
-                /*
-                  Since this is right drawable subtract the value of x from the width
-                  of view. so that width - tappedarea will result in x co-ordinate in drawable bound.
-                 */
-                x = getWidth() - x;
-
-                /*x can be negative if user taps at x co-ordinate just near the width.
-                 * e.g views width = 300 and user taps 290. Then as per previous calculation
-                 * 290 + 13 = 303. So subtract X from getWidth() will result in negative value.
-                 * So to avoid this add the value previous added when x goes negative.
-                 */
-
-                if (x <= 0) {
-                    x += extraTapArea;
-                }
-
-                /* If result after calculating for extra tappable area is negative.
-                 * assign the original value so that after subtracting
-                 * extra tapping area value doesn't go into negative value.
-                 */
-
-                if (y <= 0)
-                    y = actionY;
-
-                // If drawble bounds contains the x and y points then move ahead.
-                if (bounds.contains(x, y) && clickListener != null) {
-                    clickListener
-                            .onClick(DrawableClickListener.DrawablePosition.RIGHT);
-                    event.setAction(MotionEvent.ACTION_CANCEL);
+                if(!drawRight(drawableRight.getBounds(), event)){
                     return false;
                 }
-                return super.onTouchEvent(event);
             }
+        }
+        return super.onTouchEvent(event);
+    }
 
+    /**
+     * Used by function onTouchEvent, Draws Left
+     * @param bounds
+     * @param event
+     * @return
+     */
+    private boolean drawLeft(Rect bounds, MotionEvent event){
+        int x = actionX;
+        int y = actionY;
+
+        int extraTapArea = (int) (13 * getResources().getDisplayMetrics().density + 0.5);
+
+        if (!bounds.contains(actionX, actionY)) {
+            // Gives the +20 area for tapping.
+            x = (int) (actionX - extraTapArea);
+            y = (int) (actionY - extraTapArea);
+
+            if (x <= 0)
+                x = actionX;
+            if (y <= 0)
+                y = actionY;
+
+            // Creates square from the smallest value
+            if (x < y) {
+                y = x;
+            }
+        }
+
+        if (bounds.contains(x, y) && clickListener != null) {
+            clickListener
+                    .onClick(DrawableClickListener.DrawablePosition.LEFT);
+            event.setAction(MotionEvent.ACTION_CANCEL);
+            return false;
+
+        }
+        return true;
+    }
+
+    /**
+     * Used by function onTouchEvent, Draws Right.
+     * @param bounds
+     * @param event
+     * @return
+     */
+    private boolean drawRight(Rect bounds, MotionEvent event){
+        int extraTapArea = 13;
+
+        /*
+          IF USER CLICKS JUST OUT SIDE THE RECTANGLE OF THE DRAWABLE
+          THAN ADD X AND SUBTRACT THE Y WITH SOME VALUE SO THAT AFTER
+          CALCULATING X AND Y CO-ORDINATE LIES INTO THE DRAWBABLE
+          BOUND. - this process help to increase the tappable area of
+          the rectangle.
+         */
+
+        int x = (int) (actionX + extraTapArea);
+        int y = (int) (actionY - extraTapArea);
+        /*
+          Since this is right drawable subtract the value of x from the width
+          of view. so that width - tappedarea will result in x co-ordinate in drawable bound.
+         */
+        x = getWidth() - x;
+
+        /*x can be negative if user taps at x co-ordinate just near the width.
+         * e.g views width = 300 and user taps 290. Then as per previous calculation
+         * 290 + 13 = 303. So subtract X from getWidth() will result in negative value.
+         * So to avoid this add the value previous added when x goes negative.
+         */
+
+        if (x <= 0) {
+            x += extraTapArea;
+        }
+
+        /* If result after calculating for extra tappable area is negative.
+         * assign the original value so that after subtracting
+         * extra tapping area value doesn't go into negative value.
+         */
+
+        if (y <= 0)
+            y = actionY;
+
+        // If drawble bounds contains the x and y points then move ahead.
+        if (bounds.contains(x, y) && clickListener != null) {
+            clickListener
+                    .onClick(DrawableClickListener.DrawablePosition.RIGHT);
+            event.setAction(MotionEvent.ACTION_CANCEL);
+            return false;
         }
         return super.onTouchEvent(event);
     }
