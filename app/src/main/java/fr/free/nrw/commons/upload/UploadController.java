@@ -108,7 +108,6 @@ public class UploadController {
     @SuppressLint("StaticFieldLeak")
     private void startUpload(final Contribution contribution, final ContributionUploadProgress onComplete) {
         //Set creator, desc, and license
-
         // If author name is enabled and set, use it
         if (defaultKvStore.getBoolean("useAuthorName", false)) {
             String authorName = defaultKvStore.getString("authorName", "");
