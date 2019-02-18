@@ -32,6 +32,10 @@ class FilePickerTest {
         MockKAnnotations.init(this)
     }
 
+    /**
+     * Tests that FilePicker calls onPictureReturnedFromDocuments method
+     * when correct request and result code is given.
+     */
     @Test
     fun handleActivityResultOKFromDocuments() {
         val requestCode = 2924
@@ -55,6 +59,10 @@ class FilePickerTest {
         }
     }
 
+    /**
+     * Tests that FilePicker calls callbacks.onCanceled() method
+     * when correct request and result code is given.
+     */
     @Test
     fun handleActivityResultPickFromDocumentsCancel() {
         val requestCode = 2924
