@@ -6,7 +6,7 @@ import org.junit.Test;
 import static fr.free.nrw.commons.utils.ImageUtils.checkIfImageIsDark;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +32,7 @@ public class ImageUtilsTest{
     Bitmap bitmap = mock(Bitmap.class);
     when(bitmap.getWidth()).thenReturn(10);
     when(bitmap.getHeight()).thenReturn(10);
-    when(bitmap.getPixel(any(), any())).thenReturn(16777215);
+    when(bitmap.getPixel(anyInt(), anyInt())).thenReturn(16777214);
     assertFalse(checkIfImageIsDark(bitmap));
   }
 
@@ -41,7 +41,7 @@ public class ImageUtilsTest{
     Bitmap bitmap = mock(Bitmap.class);
     when(bitmap.getWidth()).thenReturn(20);
     when(bitmap.getHeight()).thenReturn(20);
-    when(bitmap.getPixel(any(), any())).thenReturn(0);
+    when(bitmap.getPixel(anyInt(), anyInt())).thenReturn(0);
     assertTrue(checkIfImageIsDark(bitmap));
   }
 }
