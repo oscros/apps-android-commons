@@ -32,7 +32,7 @@ public class ImageUtilsTest{
     Bitmap bitmap = mock(Bitmap.class);
     when(bitmap.getWidth()).thenReturn(10);
     when(bitmap.getHeight()).thenReturn(10);
-    when(bitmap.getPixel(anyInt(), anyInt())).thenReturn(16777214);
+    when(bitmap.getPixel(anyInt(), anyInt())).thenReturn(-1);
     assertFalse(checkIfImageIsDark(bitmap));
   }
 
@@ -41,7 +41,7 @@ public class ImageUtilsTest{
     Bitmap bitmap = mock(Bitmap.class);
     when(bitmap.getWidth()).thenReturn(20);
     when(bitmap.getHeight()).thenReturn(20);
-    when(bitmap.getPixel(anyInt(), anyInt())).thenReturn(0);
+    when(bitmap.getPixel(anyInt(), anyInt())).thenReturn(-16777216);
     assertTrue(checkIfImageIsDark(bitmap));
   }
 }
