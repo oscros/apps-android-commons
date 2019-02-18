@@ -5,6 +5,7 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
+import junit.framework.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -50,14 +51,18 @@ class CustomEditTextTest {
     }
 
     @Test
-    fun onTouchEventTestDrawableLeft() {
-        mCustomEditText.setCompoundDrawables(mDrawable, null, null, null)
+    fun onTouchEventTestDrawableRight() {
+        mCustomEditText.setCompoundDrawables(null, null, mDrawable, null)
 
         Mockito.`when`(mDrawable.bounds).thenReturn(mRect)
         Mockito.`when`(mRect.contains(Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(true)
 
         mCustomEditText.setDrawableClickListener(mListener)
-        mCustomEditText.onTouchEvent(mEvent)
+        val result = mCustomEditText.onTouchEvent(mEvent)
+
+        Mockito.verify(mListener).onClick(CustomEditText.DrawableClickListener.DrawablePosition.RIGHT)
+        Mockito.verify(mEvent).action = MotionEvent.ACTION_CANCEL
+        assertFalse(result)
     }
 }
