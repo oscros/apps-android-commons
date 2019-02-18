@@ -91,6 +91,141 @@ public class UploadController {
     }
 
     /**
+     * Add the author name and description to the param contribution
+     * @param contribution
+     * @return updated contribution
+     */
+    private Contribution authorAndDescriptionSetter(Contribution contribution) {
+
+        // If author name is enabled and set, use it
+        if (defaultKvStore.getBoolean("useAuthorName", false)) {
+            String authorName = defaultKvStore.getString("authorName", "");
+            contribution.setCreator(authorName);
+        }
+
+        if (TextUtils.isEmpty(contribution.getCreator())) {
+            Account currentAccount = sessionManager.getCurrentAccount();
+            if (currentAccount == null) {
+                Timber.d("Current account is null");
+                ViewUtil.showLongToast(context, context.getString(R.string.user_not_logged_in));
+                sessionManager.forceLogin(context);
+                return null;
+            }
+            contribution.setCreator(sessionManager.getAuthorName());
+        }
+
+        if (contribution.getDescription() == null) {
+            contribution.setDescription("");
+        }
+        return contribution;
+    }
+
+    /**
+     * Set the data length to the param contribution
+     * @param contribution
+     * @param contentResolver
+     * @return the updated contribution
+     */
+    private Contribution setDataLength(Contribution contribution, ContentResolver contentResolver) {
+        long length;
+        try {
+            if (contribution.getDataLength() <= 0) {
+                Timber.d("UploadController/doInBackground, contribution.getLocalUri():" + contribution.getLocalUri());
+                AssetFileDescriptor assetFileDescriptor = contentResolver
+                        .openAssetFileDescriptor(Uri.fromFile(new File(contribution.getLocalUri().getPath())), "r");
+                if (assetFileDescriptor != null) {
+                    length = assetFileDescriptor.getLength();
+                    if (length == -1) {
+                        // Let us find out the long way!
+                        length = countBytes(contentResolver
+                                .openInputStream(contribution.getLocalUri()));
+                    }
+                    contribution.setDataLength(length);
+                    return contribution;
+                }
+            }
+        } catch (IOException e) {
+            Timber.e(e, "IO Exception: ");
+        } catch (NullPointerException e) {
+            Timber.e(e, "Null Pointer Exception: ");
+        } catch (SecurityException e) {
+            Timber.e(e, "Security Exception: ");
+        }
+        return contribution;
+    }
+
+    /**
+     * Set the date created on the param contribution
+     * @param contribution
+     * @param imagePrefix
+     * @param contentResolver
+     * @return the updated contribution
+     */
+    private Contribution setDateCreated(Contribution contribution, boolean imagePrefix, ContentResolver contentResolver) {
+        if (imagePrefix && contribution.getDateCreated() == null) {
+            Timber.d("local uri   " + contribution.getLocalUri());
+            Cursor cursor = contentResolver.query(contribution.getLocalUri(),
+                    new String[]{MediaStore.Images.ImageColumns.DATE_TAKEN}, null, null, null);
+            if (cursor != null && cursor.getCount() != 0 && cursor.getColumnCount() != 0) {
+                cursor.moveToFirst();
+                Date dateCreated = new Date(cursor.getLong(0));
+                Date epochStart = new Date(0);
+                if (dateCreated.equals(epochStart) || dateCreated.before(epochStart)) {
+                    // If date is incorrect (1st second of unix time) then set it to the current date
+                    dateCreated = new Date();
+                }
+                contribution.setDateCreated(dateCreated);
+                cursor.close();
+            } else {
+                contribution.setDateCreated(new Date());
+            }
+        }
+        return contribution;
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void startUploadAsync(final Contribution contribution, final ContributionUploadProgress onComplete) {
+        //FIXME: Add permission request here. Only executeAsyncTask if permission has been granted
+        new AsyncTask<Void, Void, Contribution>() {
+
+            // Fills up missing information about Contributions
+            // Only does things that involve some form of IO
+            // Runs in background thread
+            @Override
+            protected Contribution doInBackground(Void... voids /* stare into you */) {
+
+                ContentResolver contentResolver = context.getContentResolver();
+                contribution.setDataLength(setDataLength(contribution, contentResolver).getDataLength());
+
+                String mimeType = (String) contribution.getTag("mimeType");
+                Boolean imagePrefix = false;
+
+                if (mimeType == null || TextUtils.isEmpty(mimeType) || mimeType.endsWith("*")) {
+                    mimeType = contentResolver.getType(contribution.getLocalUri());
+                }
+
+                if (mimeType != null) {
+                    contribution.setTag("mimeType", mimeType);
+                    imagePrefix = mimeType.startsWith("image/");
+                    Timber.d("MimeType is: %s", mimeType);
+                }
+
+                contribution.setDateCreated(setDateCreated(contribution, imagePrefix, contentResolver).getDateCreated());
+                return contribution;
+            }
+
+            @Override
+            protected void onPostExecute(Contribution contribution) {
+                super.onPostExecute(contribution);
+                //Starts the upload. If commented out, user can proceed to next Fragment but upload doesn't happen
+                uploadService.queue(UploadService.ACTION_UPLOAD_FILE, contribution);
+                onComplete.onUploadStarted(contribution);
+            }
+        }.executeOnExecutor(Executors.newFixedThreadPool(1)); // TODO remove this by using a sensible thread handling strategy
+    }
+
+
+    /**
      * Starts a new upload task.
      *
      * @param contribution the contribution object
@@ -108,106 +243,17 @@ public class UploadController {
     @SuppressLint("StaticFieldLeak")
     private void startUpload(final Contribution contribution, final ContributionUploadProgress onComplete) {
         //Set creator, desc, and license
+        Contribution c = authorAndDescriptionSetter(contribution);
+        if (c == null) return;
 
-        // If author name is enabled and set, use it
-        if (defaultKvStore.getBoolean("useAuthorName", false)) {
-            String authorName = defaultKvStore.getString("authorName", "");
-            contribution.setCreator(authorName);
-        }
+        contribution.setCreator(c.getCreator());
+        contribution.setDescription(c.getDescription());
 
-        if (TextUtils.isEmpty(contribution.getCreator())) {
-            Account currentAccount = sessionManager.getCurrentAccount();
-            if (currentAccount == null) {
-                Timber.d("Current account is null");
-                ViewUtil.showLongToast(context, context.getString(R.string.user_not_logged_in));
-                sessionManager.forceLogin(context);
-                return;
-            }
-            contribution.setCreator(sessionManager.getAuthorName());
-        }
-
-        if (contribution.getDescription() == null) {
-            contribution.setDescription("");
-        }
 
         String license = defaultKvStore.getString(Prefs.DEFAULT_LICENSE, Prefs.Licenses.CC_BY_SA_3);
         contribution.setLicense(license);
 
-        //FIXME: Add permission request here. Only executeAsyncTask if permission has been granted
-        new AsyncTask<Void, Void, Contribution>() {
-
-            // Fills up missing information about Contributions
-            // Only does things that involve some form of IO
-            // Runs in background thread
-            @Override
-            protected Contribution doInBackground(Void... voids /* stare into you */) {
-                long length;
-                ContentResolver contentResolver = context.getContentResolver();
-                try {
-                    if (contribution.getDataLength() <= 0) {
-                        Timber.d("UploadController/doInBackground, contribution.getLocalUri():" + contribution.getLocalUri());
-                        AssetFileDescriptor assetFileDescriptor = contentResolver
-                                .openAssetFileDescriptor(Uri.fromFile(new File(contribution.getLocalUri().getPath())), "r");
-                        if (assetFileDescriptor != null) {
-                            length = assetFileDescriptor.getLength();
-                            if (length == -1) {
-                                // Let us find out the long way!
-                                length = countBytes(contentResolver
-                                        .openInputStream(contribution.getLocalUri()));
-                            }
-                            contribution.setDataLength(length);
-                        }
-                    }
-                } catch (IOException e) {
-                    Timber.e(e, "IO Exception: ");
-                } catch (NullPointerException e) {
-                    Timber.e(e, "Null Pointer Exception: ");
-                } catch (SecurityException e) {
-                    Timber.e(e, "Security Exception: ");
-                }
-
-                String mimeType = (String) contribution.getTag("mimeType");
-                Boolean imagePrefix = false;
-
-                if (mimeType == null || TextUtils.isEmpty(mimeType) || mimeType.endsWith("*")) {
-                    mimeType = contentResolver.getType(contribution.getLocalUri());
-                }
-
-                if (mimeType != null) {
-                    contribution.setTag("mimeType", mimeType);
-                    imagePrefix = mimeType.startsWith("image/");
-                    Timber.d("MimeType is: %s", mimeType);
-                }
-
-                if (imagePrefix && contribution.getDateCreated() == null) {
-                    Timber.d("local uri   " + contribution.getLocalUri());
-                    Cursor cursor = contentResolver.query(contribution.getLocalUri(),
-                            new String[]{MediaStore.Images.ImageColumns.DATE_TAKEN}, null, null, null);
-                    if (cursor != null && cursor.getCount() != 0 && cursor.getColumnCount() != 0) {
-                        cursor.moveToFirst();
-                        Date dateCreated = new Date(cursor.getLong(0));
-                        Date epochStart = new Date(0);
-                        if (dateCreated.equals(epochStart) || dateCreated.before(epochStart)) {
-                            // If date is incorrect (1st second of unix time) then set it to the current date
-                            dateCreated = new Date();
-                        }
-                        contribution.setDateCreated(dateCreated);
-                        cursor.close();
-                    } else {
-                        contribution.setDateCreated(new Date());
-                    }
-                }
-                return contribution;
-            }
-
-            @Override
-            protected void onPostExecute(Contribution contribution) {
-                super.onPostExecute(contribution);
-                //Starts the upload. If commented out, user can proceed to next Fragment but upload doesn't happen
-                uploadService.queue(UploadService.ACTION_UPLOAD_FILE, contribution);
-                onComplete.onUploadStarted(contribution);
-            }
-        }.executeOnExecutor(Executors.newFixedThreadPool(1)); // TODO remove this by using a sensible thread handling strategy
+        startUploadAsync(contribution, onComplete);
     }
 
 
