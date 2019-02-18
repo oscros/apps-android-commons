@@ -90,12 +90,12 @@ public class CustomEditText extends EditText {
                     x = (int) (actionX - extraTapArea);
                     y = (int) (actionY - extraTapArea);
 
-                    if (x <= 0) {
+                    if (x <= 0)
                         x = actionX;
-                    }
-                    if (y <= 0) {
+
+                    if (y <= 0)
                         y = actionY;
-                    }
+
 
                     // Creates square from the smallest value
                     if (x < y) {
@@ -151,9 +151,9 @@ public class CustomEditText extends EditText {
                  * extra tapping area value doesn't go into negative value.
                  */
 
-                if (y <= 0) {
+                if (y <= 0)
                     y = actionY;
-                }
+
 
                 // If drawble bounds contains the x and y points then move ahead.
                 if (bounds.contains(x, y) && clickListener != null) {
