@@ -33,13 +33,7 @@ class CustomEditTextTest {
         mEvent.action = MotionEvent.ACTION_DOWN
         mCustomEditText = CustomEditText(mContext, mAttrs)
     }
-
-    @After
-    fun tearDown() {
-        for(value in mCustomEditText.testCoverage)
-            println(value)
-    }
-
+    
     @Test
     fun onTouchEventTestDrawableLeft() {
         mCustomEditText.setCompoundDrawables(mDrawable, null, null, null)
