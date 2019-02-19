@@ -138,24 +138,17 @@ public class ImageUtils {
                 int g = Color.green(pixel);
                 int b = Color.blue(pixel);
 
-                int secondMax = r > g ? r : g;
-                double max = (secondMax > b ? secondMax : b) / 255.0;
+                double max = maxRGB(r, g, b);
 
-                int secondMin = r < g ? r : g;
-                double min = (secondMin < b ? secondMin : b) / 255.0;
+                double min = minRGB(r, g, b);
 
                 double luminance = ((max + min) / 2.0) * 100;
 
                 int highBrightnessLuminance = 40;
                 int mediumBrightnessLuminance = 26;
 
-                if (luminance < highBrightnessLuminance) {
-                    if (luminance > mediumBrightnessLuminance) {
-                        numberOfMediumBrightnessPixels++;
-                    }
-                } else {
-                    numberOfBrightPixels++;
-                }
+                numberOfBrightPixels = findBrightPixel(luminance, highBrightnessLuminance, numberOfBrightPixels);
+                numberOfMediumBrightnessPixels = findMediumBrightPixel(luminance, highBrightnessLuminance, mediumBrightnessLuminance, numberOfMediumBrightnessPixels);
 
                 if (numberOfBrightPixels >= brightPixelThreshold || numberOfMediumBrightnessPixels >= mediumBrightPixelThreshold) {
                     return false;
@@ -163,6 +156,65 @@ public class ImageUtils {
             }
         }
         return true;
+    }
+
+    /**
+     * Calculates the largest RGB value
+     * @param r red color value
+     * @param g green color value
+     * @param b blue color value
+     * @return largest RGB value
+     */
+    public double maxRGB(int r, int g, int b){
+      int secondMax = r > g ? r : g;
+      double max = (secondMax > b ? secondMax : b) / 255.0;
+      return max;
+    }
+
+    /**
+     * Calculates the smallest RGB value
+     * @param r red color value
+     * @param g green color value
+     * @param b blue color value
+     * @return smallest RGB value
+     */
+    public double minRGB(int r, int g, int b){
+      int secondMin = r < g ? r : g;
+      double min = (secondMin < b ? secondMin : b) / 255.0;
+      return min;
+    }
+
+    /**
+     * Increases numberOfBrightPixels if the luminance from the
+     * pixel is  bright
+     * @param luminance luminance of the pixel
+     * @param highBrightnessLuminance bright pixel luminance threshold
+     * @param numberOfBrightPixels the number of medium bright pixels
+     * @return numberOfBrightPixels or numberOfBrightPixels + 1 if conditions met
+     */
+    public int findBrightPixel(int luminance, int highBrightnessLuminance, int numberOfBrightPixels){
+      if (!(luminance < highBrightnessLuminance)) {
+        numberOfBrightPixels++;
+      }
+      return numberOfBrightPixels;
+    }
+
+    /**
+     * Increases numberOfMediumBrightnessPixels if the luminance from the
+     * pixel is of medium brightness
+     * @param luminance luminance of the pixel
+     * @param highBrightnessLuminance bright pixel luminance threshold
+     * @param mediumBrightnessLuminance medium bright pixel luminance threshold
+     * @param numberOfMediumBrightnessPixels the number of medium bright pixels
+     * @return numberOfMediumBrightnessPixels or numberOfMediumBrightnessPixels + 1 if conditions met
+     */
+    public int findMediumBrightPixel(int luminance, int highBrightnessLuminance, int mediumBrightnessLuminance, int numberOfMediumBrightnessPixels){
+      if (luminance < highBrightnessLuminance) {
+          if (luminance > mediumBrightnessLuminance) {
+              numberOfMediumBrightnessPixels++;
+          }
+      }
+      return numberOfMediumBrightnessPixels;
     }
 
     /**
