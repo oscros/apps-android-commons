@@ -57,52 +57,84 @@ public class NearbyController {
         }
         List<Place> places = nearbyPlaces.radiusExpander(latLangToSearchAround, Locale.getDefault().getLanguage(), returnClosestResult);
 
-        if (null != places && places.size() > 0) {
-            LatLng[] boundaryCoordinates = {places.get(0).location,   // south
-                    places.get(0).location, // north
-                    places.get(0).location, // west
-                    places.get(0).location};// east, init with a random location
+        if (null != places && places.size() > 0)
+            return placesNotNull(places, curLatLng, nearbyPlacesInfo, returnClosestResult,
+                    checkingAroundCurrentLocation);
 
-
-            if (curLatLng != null) {
-                Timber.d("Sorting places by distance...");
-                final Map<Place, Double> distances = new HashMap<>();
-                for (Place place : places) {
-                    distances.put(place, computeDistanceBetween(place.location, curLatLng));
-                    // Find boundaries with basic find max approach
-                    if (place.location.getLatitude() < boundaryCoordinates[0].getLatitude()) {
-                        boundaryCoordinates[0] = place.location;
-                    }
-                    if (place.location.getLatitude() > boundaryCoordinates[1].getLatitude()) {
-                        boundaryCoordinates[1] = place.location;
-                    }
-                    if (place.location.getLongitude() < boundaryCoordinates[2].getLongitude()) {
-                        boundaryCoordinates[2] = place.location;
-                    }
-                    if (place.location.getLongitude() > boundaryCoordinates[3].getLongitude()) {
-                        boundaryCoordinates[3] = place.location;
-                    }
-                }
-                Collections.sort(places,
-                        (lhs, rhs) -> {
-                            double lhsDistance = distances.get(lhs);
-                            double rhsDistance = distances.get(rhs);
-                            return (int) (lhsDistance - rhsDistance);
-                        }
-                );
-            }
-            nearbyPlacesInfo.placeList = places;
-            nearbyPlacesInfo.boundaryCoordinates = boundaryCoordinates;
-            if (!returnClosestResult && checkingAroundCurrentLocation) {
-                // Do not update searched radius, if controller is used for nearby card notification
-                searchedRadius = nearbyPlaces.radius;
-                currentLocation = curLatLng;
-            }
-            return nearbyPlacesInfo;
-        }
         else {
             return null;
         }
+    }
+
+    /**
+     * Creates an array of coordinates and sets it to the nearbyPlacesInfo object which is returned.
+     *
+     * @param places List of places.
+     * @param curLatLng current location for user.
+     * @param nearbyPlacesInfo A new nearbyPlaces object
+     * @param returnClosestResult if this search is done to find closest result or all results.
+     * @param checkingAroundCurrentLocation If true, is checking around current location.
+     * @return The given nearbyPlacesInfo object updated with an array of coordinates.
+     */
+    private NearbyPlacesInfo placesNotNull(List<Place> places, LatLng curLatLng, NearbyPlacesInfo nearbyPlacesInfo,
+                                           boolean returnClosestResult, boolean checkingAroundCurrentLocation) {
+        LatLng[] boundaryCoordinates = {
+                places.get(0).location,   // south
+                places.get(0).location, // north
+                places.get(0).location, // west
+                places.get(0).location // east, init with a random location
+        };
+
+        if (curLatLng != null) {
+            final Map<Place, Double> distances = new HashMap<>();
+            boundaryCoordinates = setBoundaryCoordinates(boundaryCoordinates, distances, curLatLng, places);
+            Collections.sort(places,
+                    (lhs, rhs) -> {
+                        double lhsDistance = distances.get(lhs);
+                        double rhsDistance = distances.get(rhs);
+                        return (int) (lhsDistance - rhsDistance);
+                    }
+            );
+        }
+        nearbyPlacesInfo.placeList = places;
+        nearbyPlacesInfo.boundaryCoordinates = boundaryCoordinates;
+        if (!returnClosestResult && checkingAroundCurrentLocation) {
+            // Do not update searched radius, if controller is used for nearby card notification
+            searchedRadius = nearbyPlaces.radius;
+            currentLocation = curLatLng;
+        }
+        return nearbyPlacesInfo;
+    }
+
+    /**
+     * Fills the given array of coordinates with actual values.
+     *
+     * @param boundaryCoordinates The array of coordinates to fill.
+     * @param distances A map of places and distances.
+     * @param curLatLng current location for user.
+     * @param places List of places.
+     * @return The given array with coordinates, now filled with actual values.
+     */
+    private LatLng[] setBoundaryCoordinates(LatLng[] boundaryCoordinates, Map<Place, Double> distances,
+                                            LatLng curLatLng, List<Place> places) {
+        Timber.d("Sorting places by distance...");
+        for (Place place : places) {
+            distances.put(place, computeDistanceBetween(place.location, curLatLng));
+            // Find boundaries with basic find max approach
+            if (place.location.getLatitude() < boundaryCoordinates[0].getLatitude()) {
+                boundaryCoordinates[0] = place.location;
+            }
+            if (place.location.getLatitude() > boundaryCoordinates[1].getLatitude()) {
+                boundaryCoordinates[1] = place.location;
+            }
+            if (place.location.getLongitude() < boundaryCoordinates[2].getLongitude()) {
+                boundaryCoordinates[2] = place.location;
+            }
+            if (place.location.getLongitude() > boundaryCoordinates[3].getLongitude()) {
+                boundaryCoordinates[3] = place.location;
+            }
+        }
+        return boundaryCoordinates;
     }
 
     /**
