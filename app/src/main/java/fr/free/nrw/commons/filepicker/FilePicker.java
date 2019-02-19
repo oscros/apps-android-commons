@@ -308,6 +308,16 @@ public class FilePicker implements Constants {
         }
     }
 
+    /**
+     * Checks for which activity was selected and handles the results of it.
+     * Activity in this case is how the user wants to pick a file ( Pick from gallery, take picture, capture video etc.).
+     *
+     * @param requestCode The code that started the activity.
+     * @param resultCode The result of the activity that was just closed.
+     * @param data The intent from the activity that was just used.
+     * @param activity The current activity the user is in.
+     * @param callbacks A callback for the FilePicker.
+     */
     public static void handleActivityResult(int requestCode, int resultCode, Intent data, Activity activity, @NonNull FilePicker.Callbacks callbacks) {
         boolean isHandledPickedFile = (requestCode & RequestCodes.FILE_PICKER_IMAGE_IDENTIFICATOR) > 0;
         if (isHandledPickedFile) {
