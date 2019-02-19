@@ -466,30 +466,7 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
              * If we are close to nearby places boundaries, we need a significant update to
              * get new nearby places. Check order is south, north, west, east
              * */
-            if (nearbyMapFragment.boundaryCoordinates != null
-                    && !nearbyMapFragment.checkingAround
-                    && !nearbyMapFragment.searchThisAreaModeOn
-                    && !onOrientationChanged
-                    && (curLatLng.getLatitude() < nearbyMapFragment.boundaryCoordinates[0].getLatitude()
-                    || curLatLng.getLatitude() > nearbyMapFragment.boundaryCoordinates[1].getLatitude()
-                    || curLatLng.getLongitude() < nearbyMapFragment.boundaryCoordinates[2].getLongitude()
-                    || curLatLng.getLongitude() > nearbyMapFragment.boundaryCoordinates[3].getLongitude())) {
-                // populate places
-                placesDisposable = Observable.fromCallable(() -> nearbyController
-                        .loadAttractionsFromLocation(curLatLng, curLatLng, false, updateViaButton))
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::populatePlaces,
-                                throwable -> {
-                                    Timber.d(throwable);
-                                    showErrorMessage(getString(R.string.error_fetching_nearby_places));
-                                    progressBar.setVisibility(View.GONE);
-                                });
-                nearbyMapFragment.setBundleForUpdates(bundle);
-                nearbyMapFragment.updateMapSignificantlyForCurrentLocation();
-                updateListFragment();
-                return;
-            }
+            if (significantUpdate(nearbyMapFragment, updateViaButton)) return;
 
             if (updateViaButton) {
                 nearbyMapFragment.updateMapSignificantlyForCustomLocation(customLatLng, nearbyPlacesInfo.placeList);
@@ -520,6 +497,34 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
             hideProgressBar();
             lockNearbyView(false);
         }
+    }
+
+    private boolean significantUpdate(NearbyMapFragment nearbyMapFragment, boolean updateViaButton) {
+        if (nearbyMapFragment.boundaryCoordinates != null
+                && !nearbyMapFragment.checkingAround
+                && !nearbyMapFragment.searchThisAreaModeOn
+                && !onOrientationChanged
+                && (curLatLng.getLatitude() < nearbyMapFragment.boundaryCoordinates[0].getLatitude()
+                || curLatLng.getLatitude() > nearbyMapFragment.boundaryCoordinates[1].getLatitude()
+                || curLatLng.getLongitude() < nearbyMapFragment.boundaryCoordinates[2].getLongitude()
+                || curLatLng.getLongitude() > nearbyMapFragment.boundaryCoordinates[3].getLongitude())) {
+            // populate places
+            placesDisposable = Observable.fromCallable(() -> nearbyController
+                    .loadAttractionsFromLocation(curLatLng, curLatLng, false, updateViaButton))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::populatePlaces,
+                            throwable -> {
+                                Timber.d(throwable);
+                                showErrorMessage(getString(R.string.error_fetching_nearby_places));
+                                progressBar.setVisibility(View.GONE);
+                            });
+            nearbyMapFragment.setBundleForUpdates(bundle);
+            nearbyMapFragment.updateMapSignificantlyForCurrentLocation();
+            updateListFragment();
+            return true;
+        }
+        return false;
     }
 
     /**
