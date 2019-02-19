@@ -159,7 +159,7 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
     /**
      * Returns the map fragment added to child fragment manager previously, if exists.
      */
-    private NearbyMapFragment getMapFragment() {
+    public NearbyMapFragment getMapFragment() {
         return (NearbyMapFragment) getChildFragmentManager().findFragmentByTag(TAG_RETAINED_MAP_FRAGMENT);
     }
 
@@ -461,7 +461,7 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
      *                     Ie. when we use search this area feature
      * @param nearbyPlacesInfo Includes nearby places list and boundary coordinates
      */
-    private void updateMapFragment(boolean updateViaButton, boolean isSlightUpdate, @Nullable LatLng customLatLng, @Nullable NearbyController.NearbyPlacesInfo nearbyPlacesInfo) {
+    public void updateMapFragment(boolean updateViaButton, boolean isSlightUpdate, @Nullable LatLng customLatLng, @Nullable NearbyController.NearbyPlacesInfo nearbyPlacesInfo) {
         testCoverage = new boolean[17];
         /*
         Significant update means updating nearby place markers. Slightly update means only
@@ -607,7 +607,7 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
     /**
      * Hides progress bar
      */
-    private void hideProgressBar() {
+    public void hideProgressBar() {
         if (progressBar != null) {
             progressBar.setVisibility(View.GONE);
         }

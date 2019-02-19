@@ -1,25 +1,36 @@
 package fr.free.nrw.commons;
 
+import android.os.Bundle;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import static fr.free.nrw.commons.location.LocationServiceManager.LocationChangeType.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.support.membermodification.MemberMatcher.method;
 
 import fr.free.nrw.commons.location.LatLng;
 import fr.free.nrw.commons.location.LocationServiceManager;
+import fr.free.nrw.commons.nearby.NearbyController;
 import fr.free.nrw.commons.nearby.NearbyFragment;
+import fr.free.nrw.commons.nearby.NearbyMapFragment;
 import fr.free.nrw.commons.utils.NetworkUtils;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(NetworkUtils.class)
+@PrepareForTest({NetworkUtils.class, NearbyFragment.class})
 public class NearbyFragmentTest {
 
     /**
@@ -102,5 +113,65 @@ public class NearbyFragmentTest {
         Assert.assertNotEquals(null, mockLastKnownLocation);
         Assert.assertNotEquals(null, curLatLngField.get(nf));
         Assert.assertEquals(mockLastKnownLocation, curLatLngField.get(nf));
+    }
+
+    @Test
+    public void updateMapFragment1() throws Exception {
+        NearbyMapFragment mockNearbyMapFragment = mock(NearbyMapFragment.class);
+        when(mockNearbyMapFragment.isCurrentLocationMarkerVisible()).thenReturn(true);
+
+        NearbyFragment nf = spy(NearbyFragment.class);
+
+        Mockito.doReturn(mockNearbyMapFragment).when(nf).getMapFragment();
+        Mockito.when(mockNearbyMapFragment.isCurrentLocationMarkerVisible()).thenReturn(true);
+
+        LatLng mockLatLng = mock(LatLng.class);
+
+        Field curLatLngField = NearbyFragment.class.getDeclaredField("curLatLng");
+        curLatLngField.setAccessible(true);
+        curLatLngField.set(nf, mockLatLng);
+
+        Bundle mockBundle = Mockito.mock(Bundle.class);
+        Field bundleField = NearbyFragment.class.getDeclaredField("bundle");
+        bundleField.setAccessible(true);
+        bundleField.set(nf, mockBundle);
+
+        try {
+            nf.updateMapFragment(false, false, null, null);
+        } catch (NullPointerException e) {
+            // Is expected
+        }
+
+        Mockito.verify(nf).hideProgressBar();
+    }
+
+    @Test
+    public void updateMapFragment2() throws Exception {
+        NearbyMapFragment mockNearbyMapFragment = mock(NearbyMapFragment.class);
+        when(mockNearbyMapFragment.isCurrentLocationMarkerVisible()).thenReturn(true);
+
+        NearbyFragment nf = spy(NearbyFragment.class);
+
+        Mockito.doReturn(mockNearbyMapFragment).when(nf).getMapFragment();
+        Mockito.when(mockNearbyMapFragment.isCurrentLocationMarkerVisible()).thenReturn(true);
+
+        LatLng mockLatLng = mock(LatLng.class);
+
+        Field curLatLngField = NearbyFragment.class.getDeclaredField("curLatLng");
+        curLatLngField.setAccessible(true);
+        curLatLngField.set(nf, mockLatLng);
+
+        Bundle mockBundle = Mockito.mock(Bundle.class);
+        Field bundleField = NearbyFragment.class.getDeclaredField("bundle");
+        bundleField.setAccessible(true);
+        bundleField.set(nf, mockBundle);
+        
+        try {
+            nf.updateMapFragment(false, false, null, null);
+        } catch (NullPointerException e) {
+            // Is expected
+        }
+
+        Mockito.verify(mockNearbyMapFragment).updateMapSignificantlyForCurrentLocation();
     }
 }
