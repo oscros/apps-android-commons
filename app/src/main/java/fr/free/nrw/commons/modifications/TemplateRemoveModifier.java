@@ -49,7 +49,7 @@ public class TemplateRemoveModifier extends PageModifier {
             Matcher closeMatch = PATTERN_TEMPLATE_CLOSE.matcher(pageContents);
 
             BraceAndIndex braceAndIndex = new BraceAndIndex();
-            braceAndIndex = changeBraceCount(braceCount, curIndex, openFound, closeFound, openMatch, closeMatch);
+            braceAndIndex = changeBraceCount(braceCount, curIndex, openMatch, closeMatch, pageContents);
 
             braceCount = braceAndIndex.getBraceCount();
             curIndex = braceAndIndex.getCurIndex();
@@ -69,13 +69,12 @@ public class TemplateRemoveModifier extends PageModifier {
      * Changes braceCount and curIndex depending on input.
      * @param curIndex Current position in the String
      * @param braceCount number of braces
-     * @param openFound boolean
-     * @param closeFound boolean
      * @param openMatch matcher at beginnig of string
      * @param closeMatch matcher at end of string
+     * @param pageContents string with contents of the page
      * @return braceAndIndex with updated braceCount and curIndex
      */
-    public BraceAndIndex changeBraceCount(int braceCount, int curIndex, boolean openFound, boolean closeFound, Matcher openMatch, Matcher closeMatch){
+    public BraceAndIndex changeBraceCount(int braceCount, int curIndex, Matcher openMatch, Matcher closeMatch, String pageContents){
       BraceAndIndex braceAndIndex = new BraceAndIndex();
       while (curIndex < pageContents.length()) {
           boolean openFound = openMatch.find(curIndex);
