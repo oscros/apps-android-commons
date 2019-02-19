@@ -66,6 +66,16 @@ public class NearbyController {
         }
     }
 
+    /**
+     * Creates an array of coordinates and sets it to the nearbyPlacesInfo object which is returned.
+     *
+     * @param places List of places.
+     * @param curLatLng current location for user.
+     * @param nearbyPlacesInfo A new nearbyPlaces object
+     * @param returnClosestResult if this search is done to find closest result or all results.
+     * @param checkingAroundCurrentLocation If true, is checking around current location.
+     * @return The given nearbyPlacesInfo object updated with an array of coordinates.
+     */
     private NearbyPlacesInfo placesNotNull(List<Place> places, LatLng curLatLng, NearbyPlacesInfo nearbyPlacesInfo,
                                            boolean returnClosestResult, boolean checkingAroundCurrentLocation) {
         LatLng[] boundaryCoordinates = {
@@ -77,7 +87,7 @@ public class NearbyController {
 
         if (curLatLng != null) {
             final Map<Place, Double> distances = new HashMap<>();
-            boundaryCoordinates = setBoundryCoordinates(boundaryCoordinates, distances, curLatLng, places);
+            boundaryCoordinates = setBoundaryCoordinates(boundaryCoordinates, distances, curLatLng, places);
             Collections.sort(places,
                     (lhs, rhs) -> {
                         double lhsDistance = distances.get(lhs);
@@ -96,8 +106,17 @@ public class NearbyController {
         return nearbyPlacesInfo;
     }
 
-    private LatLng[] setBoundryCoordinates(LatLng[] boundaryCoordinates, Map<Place, Double> distances,
-                                           LatLng curLatLng, List<Place> places) {
+    /**
+     * Fills the given array of coordinates with actual values.
+     *
+     * @param boundaryCoordinates The array of coordinates to fill.
+     * @param distances A map of places and distances.
+     * @param curLatLng current location for user.
+     * @param places List of places.
+     * @return The given array with coordinates, now filled with actual values.
+     */
+    private LatLng[] setBoundaryCoordinates(LatLng[] boundaryCoordinates, Map<Place, Double> distances,
+                                            LatLng curLatLng, List<Place> places) {
         Timber.d("Sorting places by distance...");
         for (Place place : places) {
             distances.put(place, computeDistanceBetween(place.location, curLatLng));
