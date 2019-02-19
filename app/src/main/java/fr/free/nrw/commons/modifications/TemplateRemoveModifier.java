@@ -48,36 +48,14 @@ public class TemplateRemoveModifier extends PageModifier {
             Matcher openMatch = PATTERN_TEMPLATE_OPEN.matcher(pageContents);
             Matcher closeMatch = PATTERN_TEMPLATE_CLOSE.matcher(pageContents);
 
-            while (curIndex < pageContents.length()) {
-                boolean openFound = openMatch.find(curIndex);
-                boolean closeFound = closeMatch.find(curIndex);
+            BraceAndIndex braceAndIndex = new BraceAndIndex();
+            braceAndIndex = changeBraceCount(braceCount, curIndex, openFound, closeFound, openMatch, closeMatch);
 
-                if (openFound && (!closeFound || openMatch.start() < closeMatch.start())) {
-                    braceCount++;
-                    curIndex = openMatch.end();
-                } else if (closeFound) {
-                    braceCount--;
-                    curIndex = closeMatch.end();
-                } else if (braceCount > 0) {
-                    // The template never closes, so...remove nothing
-                    curIndex = startIndex;
-                    break;
-                }
-
-                if (braceCount == 0) {
-                    // The braces have all been closed!
-                    break;
-                }
-            }
+            braceCount = braceAndIndex.getBraceCount();
+            curIndex = braceAndIndex.getCurIndex();
 
             // Strip trailing whitespace
-            while (curIndex < pageContents.length()) {
-                if (pageContents.charAt(curIndex) == ' ' || pageContents.charAt(curIndex) == '\n') {
-                    curIndex++;
-                } else {
-                    break;
-                }
-            }
+            curIndex = stripWhiteSpace(curIndex, pageContents);
 
             // I am so going to hell for this, sigh
             pageContents = pageContents.substring(0, startIndex) + pageContents.substring(curIndex);
@@ -85,6 +63,91 @@ public class TemplateRemoveModifier extends PageModifier {
         }
 
         return pageContents;
+    }
+
+    /**
+     * Changes braceCount and curIndex depending on input.
+     * @param curIndex Current position in the String
+     * @param braceCount number of braces
+     * @param openFound boolean
+     * @param closeFound boolean
+     * @param openMatch matcher at beginnig of string
+     * @param closeMatch matcher at end of string
+     * @return braceAndIndex with updated braceCount and curIndex
+     */
+    public BraceAndIndex changeBraceCount(int braceCount, int curIndex, boolean openFound, boolean closeFound, Matcher openMatch, Matcher closeMatch){
+      BraceAndIndex braceAndIndex = new BraceAndIndex();
+      while (curIndex < pageContents.length()) {
+          boolean openFound = openMatch.find(curIndex);
+          boolean closeFound = closeMatch.find(curIndex);
+
+          if (openFound && (!closeFound || openMatch.start() < closeMatch.start())) {
+              braceCount++;
+              curIndex = openMatch.end();
+          } else if (closeFound) {
+              braceCount--;
+              curIndex = closeMatch.end();
+          } else if (braceCount > 0) {
+              // The template never closes, so...remove nothing
+              curIndex = startIndex;
+              break;
+          }
+
+          if (braceCount == 0) {
+              // The braces have all been closed!
+              break;
+          }
+      }
+      braceAndIndex.setCurIndex(curIndex);
+      braceAndIndex.setBraceCount(braceCount);
+      return braceAndIndex;
+    }
+
+    /**
+     * Pojo which containts both curIndex and braceCount
+     * methods are setters and getters
+     */
+    public class BraceAndIndex{
+      private int curIndex;
+      private int braceCount;
+
+      public BraceAndIndex(){
+        //Takes no args
+      }
+
+      public void setCurIndex(int value){
+        this.curIndex = value;
+      }
+
+      public void getCurIndex(){
+        return this.curIndex;
+      }
+
+      public void setBraceCount(int value){
+        this.braceCount = value;
+      }
+
+      public void getBraceCount(){
+        return this.braceCount;
+      }
+    }
+
+
+    /**
+     * Strips trailing whitespace from pageContents by changing curIndex
+     * @param curIndex Current position in the String
+     * @param pageContents pageContents to remove whitespace from
+     * @return curIndex, ie where the string should end
+     */
+    public int stripWhiteSpace(int curIndex, String pageContents){
+      while (curIndex < pageContents.length()) {
+          if (pageContents.charAt(curIndex) == ' ' || pageContents.charAt(curIndex) == '\n') {
+              curIndex++;
+          } else {
+              break;
+          }
+      }
+      return curIndex;
     }
 
     @Override
