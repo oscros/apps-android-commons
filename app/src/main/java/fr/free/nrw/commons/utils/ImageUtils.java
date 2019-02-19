@@ -184,6 +184,14 @@ public class ImageUtils {
       return min;
     }
 
+    /**
+     * Increases numberOfBrightPixels if the luminance from the
+     * pixel is  bright
+     * @param luminance luminance of the pixel
+     * @param highBrightnessLuminance bright pixel luminance threshold
+     * @param numberOfBrightPixels the number of medium bright pixels
+     * @return numberOfBrightPixels or numberOfBrightPixels + 1 if conditions met
+     */
     public int findBrightPixel(int luminance, int highBrightnessLuminance, int numberOfBrightPixels){
       if (!(luminance < highBrightnessLuminance)) {
         numberOfBrightPixels++;
@@ -191,6 +199,15 @@ public class ImageUtils {
       return numberOfBrightPixels;
     }
 
+    /**
+     * Increases numberOfMediumBrightnessPixels if the luminance from the
+     * pixel is of medium brightness
+     * @param luminance luminance of the pixel
+     * @param highBrightnessLuminance bright pixel luminance threshold
+     * @param mediumBrightnessLuminance medium bright pixel luminance threshold
+     * @param numberOfMediumBrightnessPixels the number of medium bright pixels
+     * @return numberOfMediumBrightnessPixels or numberOfMediumBrightnessPixels + 1 if conditions met
+     */
     public int findMediumBrightPixel(int luminance, int highBrightnessLuminance, int mediumBrightnessLuminance, int numberOfMediumBrightnessPixels){
       if (luminance < highBrightnessLuminance) {
           if (luminance > mediumBrightnessLuminance) {
