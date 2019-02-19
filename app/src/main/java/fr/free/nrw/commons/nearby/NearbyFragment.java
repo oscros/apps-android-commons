@@ -462,6 +462,7 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
      * @param nearbyPlacesInfo Includes nearby places list and boundary coordinates
      */
     private void updateMapFragment(boolean updateViaButton, boolean isSlightUpdate, @Nullable LatLng customLatLng, @Nullable NearbyController.NearbyPlacesInfo nearbyPlacesInfo) {
+        testCoverage = new boolean[17];
         /*
         Significant update means updating nearby place markers. Slightly update means only
         updating current location marker and camera target.
@@ -471,7 +472,9 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
          */
         NearbyMapFragment nearbyMapFragment = getMapFragment();
 
+        testCoverage[0] = true;
         if (nearbyMapFragment != null && !nearbyMapFragment.isCurrentLocationMarkerVisible() && !onOrientationChanged) {
+            testCoverage[1] = true;
             Timber.d("Do not update the map, user is not seeing current location marker" +
                     " means they are checking around and moving on map");
             return;
@@ -479,6 +482,8 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
 
 
         if (nearbyMapFragment != null && curLatLng != null) {
+            testCoverage[2] = true;
+            testCoverage[3] = true;
             hideProgressBar(); // In case it is visible (this happens, not an impossible case)
             /*
              * If we are close to nearby places boundaries, we need a significant update to
@@ -492,6 +497,14 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
                     || curLatLng.getLatitude() > nearbyMapFragment.boundaryCoordinates[1].getLatitude()
                     || curLatLng.getLongitude() < nearbyMapFragment.boundaryCoordinates[2].getLongitude()
                     || curLatLng.getLongitude() > nearbyMapFragment.boundaryCoordinates[3].getLongitude())) {
+                testCoverage[4] = true;
+                testCoverage[5] = true;
+                testCoverage[6] = true;
+                testCoverage[7] = true;
+                testCoverage[8] = true;
+                testCoverage[9] = true;
+                testCoverage[10] = true;
+                testCoverage[11] = true;
                 // populate places
                 placesDisposable = Observable.fromCallable(() -> nearbyController
                         .loadAttractionsFromLocation(curLatLng, curLatLng, false, updateViaButton))
@@ -510,6 +523,7 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
             }
 
             if (updateViaButton) {
+                testCoverage[12] = true;
                 nearbyMapFragment.updateMapSignificantlyForCustomLocation(customLatLng, nearbyPlacesInfo.placeList);
                 return;
             }
@@ -519,25 +533,31 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
             anymore. We want to significantly update map after each orientation change
              */
             if (onOrientationChanged) {
+                testCoverage[13] = true;
                 isSlightUpdate = false;
                 onOrientationChanged = false;
             }
 
             if (isSlightUpdate) {
+                testCoverage[14] = true;
                 nearbyMapFragment.setBundleForUpdates(bundle);
                 nearbyMapFragment.updateMapSlightly();
             } else {
+                testCoverage[15] = true;
                 nearbyMapFragment.setBundleForUpdates(bundle);
                 nearbyMapFragment.updateMapSignificantlyForCurrentLocation();
                 updateListFragment();
             }
         } else {
+            testCoverage[16] = true;
             lockNearbyView(true);
             setMapFragment();
             setListFragment();
             hideProgressBar();
             lockNearbyView(false);
         }
+        for (int i = 0; i < testCoverage.length; i++)
+            System.out.println("Branch " + i + " reached: " + testCoverage[i]);
     }
 
     /**
