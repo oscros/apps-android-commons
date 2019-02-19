@@ -52,9 +52,11 @@ public class CustomEditText extends EditText {
     }
 
     /**
-     * Fires the appropriate drawable click listener on touching the icon
-     * @param event
-     * @return
+     * Fires the appropriate drawable click listener on touching the icon.
+     * It takes a motion event(tap on the screen) and then goes through various aspects of the touch
+     * event and returns true if the touch event was a tap on a specific icon and false otherwise.
+     * @param event The motion event that triggered the onTouchEventCall
+     * @return True if the touch event was consumed and vice versa if false.
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
