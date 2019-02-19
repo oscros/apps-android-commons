@@ -316,30 +316,54 @@ public class FilePicker implements Constants {
                     requestCode == RequestCodes.TAKE_PICTURE ||
                     requestCode == RequestCodes.CAPTURE_VIDEO ||
                     requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) {
-                if (resultCode == Activity.RESULT_OK) {
-                    if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS && !isPhoto(data)) {
-                        onPictureReturnedFromDocuments(data, activity, callbacks);
-                    } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY && !isPhoto(data)) {
-                        onPictureReturnedFromGallery(data, activity, callbacks);
-                    } else if (requestCode == RequestCodes.TAKE_PICTURE) {
-                        onPictureReturnedFromCamera(activity, callbacks);
-                    } else if (requestCode == RequestCodes.CAPTURE_VIDEO) {
-                        onVideoReturnedFromCamera(activity, callbacks);
-                    } else if (isPhoto(data)) {
-                        onPictureReturnedFromCamera(activity, callbacks);
-                    } else {
-                        onPictureReturnedFromDocuments(data, activity, callbacks);
-                    }
-                } else {
-                    if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) {
-                        callbacks.onCanceled(FilePicker.ImageSource.DOCUMENTS, restoreType(activity));
-                    } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY) {
-                        callbacks.onCanceled(FilePicker.ImageSource.GALLERY, restoreType(activity));
-                    } else {
-                        callbacks.onCanceled(FilePicker.ImageSource.CAMERA_IMAGE, restoreType(activity));
-                    }
-                }
+                if (resultCode == Activity.RESULT_OK)
+                    handleActivityResultOK(requestCode, data, activity, callbacks);
+                 else
+                    handleActivityResultNotOK(requestCode, activity, callbacks);
             }
+        }
+    }
+
+    /**
+     * Handle the result from an activity that exited correctly.
+     *
+     * @param requestCode The code that started the activity.
+     * @param data The intent from the activity that was just used.
+     * @param activity The current activity the user is in.
+     * @param callbacks A callback for the FilePicker.
+     */
+    private static void handleActivityResultOK(int requestCode, Intent data,
+                                               Activity activity, @NonNull FilePicker.Callbacks callbacks) {
+        if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS && !isPhoto(data)) {
+            onPictureReturnedFromDocuments(data, activity, callbacks);
+        } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY && !isPhoto(data)) {
+            onPictureReturnedFromGallery(data, activity, callbacks);
+        } else if (requestCode == RequestCodes.TAKE_PICTURE) {
+            onPictureReturnedFromCamera(activity, callbacks);
+        } else if (requestCode == RequestCodes.CAPTURE_VIDEO) {
+            onVideoReturnedFromCamera(activity, callbacks);
+        } else if (isPhoto(data)) {
+            onPictureReturnedFromCamera(activity, callbacks);
+        } else {
+            onPictureReturnedFromDocuments(data, activity, callbacks);
+        }
+    }
+
+    /**
+     * Handle the result from an activity that exited wrongly.
+     *
+     * @param requestCode The code that started the activity.
+     * @param activity The current activity the user is in.
+     * @param callbacks A callback for the FilePicker.
+     */
+    private static void handleActivityResultNotOK(int requestCode, Activity activity,
+                                                  @NonNull FilePicker.Callbacks callbacks) {
+        if (requestCode == RequestCodes.PICK_PICTURE_FROM_DOCUMENTS) {
+            callbacks.onCanceled(FilePicker.ImageSource.DOCUMENTS, restoreType(activity));
+        } else if (requestCode == RequestCodes.PICK_PICTURE_FROM_GALLERY) {
+            callbacks.onCanceled(FilePicker.ImageSource.GALLERY, restoreType(activity));
+        } else {
+            callbacks.onCanceled(FilePicker.ImageSource.CAMERA_IMAGE, restoreType(activity));
         }
     }
 
