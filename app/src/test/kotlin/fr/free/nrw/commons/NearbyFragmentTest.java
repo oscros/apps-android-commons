@@ -1,7 +1,5 @@
 package fr.free.nrw.commons;
 
-import com.google.gson.Gson;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +22,11 @@ import fr.free.nrw.commons.utils.NetworkUtils;
 @PrepareForTest(NetworkUtils.class)
 public class NearbyFragmentTest {
 
+    /**
+     * Checks whether {@link NearbyFragment#refreshView refreshView} stores the right value in
+     * curLatLng when it is given LOCATION_CHANGED_MEDIUM as argument.
+     * @throws Exception if field names are inappropriate.
+     */
     @Test
     public void refreshViewReaches() throws Exception {
         NearbyFragment nf = new NearbyFragment();
@@ -55,6 +58,11 @@ public class NearbyFragmentTest {
         Assert.assertEquals(mockLocation, curLatLngField.get(nf));
     }
 
+    /**
+     * Checks whether {@link NearbyFragment#refreshView refreshView} stores the right value in
+     * curLatLng when it is given PERMISSION_JUST_GRANTED as argument.
+     * @throws Exception if the field names are inappropriate.
+     */
     @Test
     public void refreshView2() throws Exception {
         NearbyFragment nf = new NearbyFragment();
