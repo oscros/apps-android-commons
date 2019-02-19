@@ -290,6 +290,17 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
         change we want to refresh map significantly, doesn't matter if location changed significantly
         or not. Thus, we included onOrientationChanged boolean to if clause
          */
+        refreshSignificantly(locationChangeType);
+        hideButton();
+    }
+
+    private void hideButton() {
+        if (nearbyMapFragment != null && nearbyMapFragment.searchThisAreaButton != null) {
+            nearbyMapFragment.searchThisAreaButton.setVisibility(View.GONE);
+        }
+    }
+
+    private void refreshSignificantly(LocationServiceManager.LocationChangeType locationChangeType) {
         if (locationChangeType.equals(LOCATION_SIGNIFICANTLY_CHANGED)
                 || locationChangeType.equals(PERMISSION_JUST_GRANTED)
                 || locationChangeType.equals(MAP_UPDATED)
@@ -311,16 +322,10 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
                                 showErrorMessage(getString(R.string.error_fetching_nearby_places));
                                 progressBar.setVisibility(View.GONE);
                             });
-
-        } else if (locationChangeType
-                .equals(LOCATION_SLIGHTLY_CHANGED)) {
+        } else if (locationChangeType.equals(LOCATION_SLIGHTLY_CHANGED)) {
             String gsonCurLatLng = gson.toJson(curLatLng);
             bundle.putString("CurLatLng", gsonCurLatLng);
             updateMapFragment(false,true, null, null);
-        }
-
-        if (nearbyMapFragment != null && nearbyMapFragment.searchThisAreaButton != null) {
-            nearbyMapFragment.searchThisAreaButton.setVisibility(View.GONE);
         }
     }
 
