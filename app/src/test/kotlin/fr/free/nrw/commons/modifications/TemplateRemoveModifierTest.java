@@ -10,6 +10,11 @@ import static org.mockito.Mockito.when;
 
 public class TemplateRemoveModifierTest{
 
+
+  /**
+   * makes sure that the method returns the input String
+   * if there is no match 
+   */
   @Test
   public void TemplateRemoveModifierTestNoMatch(){
     String template = "template";
@@ -19,15 +24,5 @@ public class TemplateRemoveModifierTest{
 
     String result = trm.doModification("", "hej");
     assertSame(result,"hej");
-  }
-
-  @Test
-  public void TemplateRemoveModifierTestWhitespaceRemoved(){
-    TemplateRemoveModifier trm = new TemplateRemoveModifier("");
-    trm.params = mock(JSONObject.class);
-
-    when(trm.params.optString(anyString())).thenReturn("hej  hej");
-    String result = trm.doModification("", object.toString());
-    assertSame(result, "hej");
   }
 }
