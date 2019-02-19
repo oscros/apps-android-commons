@@ -57,52 +57,65 @@ public class NearbyController {
         }
         List<Place> places = nearbyPlaces.radiusExpander(latLangToSearchAround, Locale.getDefault().getLanguage(), returnClosestResult);
 
-        if (null != places && places.size() > 0) {
-            LatLng[] boundaryCoordinates = {places.get(0).location,   // south
-                    places.get(0).location, // north
-                    places.get(0).location, // west
-                    places.get(0).location};// east, init with a random location
+        if (null != places && places.size() > 0)
+            return placesNotNull(places, curLatLng, nearbyPlacesInfo, returnClosestResult,
+                    checkingAroundCurrentLocation);
 
-
-            if (curLatLng != null) {
-                Timber.d("Sorting places by distance...");
-                final Map<Place, Double> distances = new HashMap<>();
-                for (Place place : places) {
-                    distances.put(place, computeDistanceBetween(place.location, curLatLng));
-                    // Find boundaries with basic find max approach
-                    if (place.location.getLatitude() < boundaryCoordinates[0].getLatitude()) {
-                        boundaryCoordinates[0] = place.location;
-                    }
-                    if (place.location.getLatitude() > boundaryCoordinates[1].getLatitude()) {
-                        boundaryCoordinates[1] = place.location;
-                    }
-                    if (place.location.getLongitude() < boundaryCoordinates[2].getLongitude()) {
-                        boundaryCoordinates[2] = place.location;
-                    }
-                    if (place.location.getLongitude() > boundaryCoordinates[3].getLongitude()) {
-                        boundaryCoordinates[3] = place.location;
-                    }
-                }
-                Collections.sort(places,
-                        (lhs, rhs) -> {
-                            double lhsDistance = distances.get(lhs);
-                            double rhsDistance = distances.get(rhs);
-                            return (int) (lhsDistance - rhsDistance);
-                        }
-                );
-            }
-            nearbyPlacesInfo.placeList = places;
-            nearbyPlacesInfo.boundaryCoordinates = boundaryCoordinates;
-            if (!returnClosestResult && checkingAroundCurrentLocation) {
-                // Do not update searched radius, if controller is used for nearby card notification
-                searchedRadius = nearbyPlaces.radius;
-                currentLocation = curLatLng;
-            }
-            return nearbyPlacesInfo;
-        }
         else {
             return null;
         }
+    }
+
+    private NearbyPlacesInfo placesNotNull(List<Place> places, LatLng curLatLng, NearbyPlacesInfo nearbyPlacesInfo,
+                                           boolean returnClosestResult, boolean checkingAroundCurrentLocation) {
+        LatLng[] boundaryCoordinates = {
+                places.get(0).location,   // south
+                places.get(0).location, // north
+                places.get(0).location, // west
+                places.get(0).location // east, init with a random location
+        };
+
+        if (curLatLng != null) {
+            final Map<Place, Double> distances = new HashMap<>();
+            boundaryCoordinates = setBoundryCoordinates(boundaryCoordinates, distances, curLatLng, places);
+            Collections.sort(places,
+                    (lhs, rhs) -> {
+                        double lhsDistance = distances.get(lhs);
+                        double rhsDistance = distances.get(rhs);
+                        return (int) (lhsDistance - rhsDistance);
+                    }
+            );
+        }
+        nearbyPlacesInfo.placeList = places;
+        nearbyPlacesInfo.boundaryCoordinates = boundaryCoordinates;
+        if (!returnClosestResult && checkingAroundCurrentLocation) {
+            // Do not update searched radius, if controller is used for nearby card notification
+            searchedRadius = nearbyPlaces.radius;
+            currentLocation = curLatLng;
+        }
+        return nearbyPlacesInfo;
+    }
+
+    private LatLng[] setBoundryCoordinates(LatLng[] boundaryCoordinates, Map<Place, Double> distances,
+                                           LatLng curLatLng, List<Place> places) {
+        Timber.d("Sorting places by distance...");
+        for (Place place : places) {
+            distances.put(place, computeDistanceBetween(place.location, curLatLng));
+            // Find boundaries with basic find max approach
+            if (place.location.getLatitude() < boundaryCoordinates[0].getLatitude()) {
+                boundaryCoordinates[0] = place.location;
+            }
+            if (place.location.getLatitude() > boundaryCoordinates[1].getLatitude()) {
+                boundaryCoordinates[1] = place.location;
+            }
+            if (place.location.getLongitude() < boundaryCoordinates[2].getLongitude()) {
+                boundaryCoordinates[2] = place.location;
+            }
+            if (place.location.getLongitude() > boundaryCoordinates[3].getLongitude()) {
+                boundaryCoordinates[3] = place.location;
+            }
+        }
+        return boundaryCoordinates;
     }
 
     /**
