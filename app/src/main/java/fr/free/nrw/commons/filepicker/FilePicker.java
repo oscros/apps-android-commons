@@ -403,7 +403,7 @@ public class FilePicker implements Constants {
         }
     }
 
-    private static void onPictureReturnedFromDocuments(Intent data, Activity activity, @NonNull FilePicker.Callbacks callbacks) {
+    public static void onPictureReturnedFromDocuments(Intent data, Activity activity, @NonNull FilePicker.Callbacks callbacks) {
         try {
             Uri photoPath = data.getData();
             UploadableFile photoFile = PickedFiles.pickedExistingPicture(activity, photoPath);

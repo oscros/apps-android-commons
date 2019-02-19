@@ -22,8 +22,49 @@ import fr.free.nrw.commons.utils.NetworkUtils;
 @PrepareForTest(NetworkUtils.class)
 public class NearbyFragmentTest {
 
+    /**
+     * Checks whether {@link NearbyFragment#refreshView refreshView} stores the right value in
+     * curLatLng when it is given LOCATION_CHANGED_MEDIUM as argument.
+     * @throws Exception if field names are inappropriate.
+     */
     @Test
     public void refreshViewReaches() throws Exception {
+        NearbyFragment nf = new NearbyFragment();
+
+        Field lockNearbyViewField = NearbyFragment.class.getDeclaredField("lockNearbyView");
+        lockNearbyViewField.setAccessible(true);
+        lockNearbyViewField.set(nf, false);
+
+        Field curLatLngField = NearbyFragment.class.getDeclaredField("curLatLng");
+        curLatLngField.setAccessible(true);
+        curLatLngField.set(nf, null);
+
+        PowerMockito.mockStatic(NetworkUtils.class);
+        when(NetworkUtils.isInternetConnectionEstablished(nf.getActivity())).thenReturn(true);
+
+        // Set LocationManager
+        LocationServiceManager mockLocationManager = mock(LocationServiceManager.class);
+        Field locationManagerField = NearbyFragment.class.getDeclaredField("locationManager");
+        locationManagerField.setAccessible(true);
+        locationManagerField.set(nf, mockLocationManager);
+
+        LatLng mockLocation = mock(LatLng.class);
+        when(mockLocationManager.getLastLocation()).thenReturn(mockLocation);
+
+        nf.refreshView(LOCATION_MEDIUM_CHANGED);
+
+        Assert.assertNotEquals(null, mockLocation);
+        Assert.assertNotEquals(null, curLatLngField.get(nf));
+        Assert.assertEquals(mockLocation, curLatLngField.get(nf));
+    }
+
+    /**
+     * Checks whether {@link NearbyFragment#refreshView refreshView} stores the right value in
+     * curLatLng when it is given PERMISSION_JUST_GRANTED as argument.
+     * @throws Exception if the field names are inappropriate.
+     */
+    @Test
+    public void refreshView2() throws Exception {
         NearbyFragment nf = new NearbyFragment();
 
         Field lockNearbyViewField = NearbyFragment.class.getDeclaredField("lockNearbyView");
@@ -52,26 +93,14 @@ public class NearbyFragmentTest {
         LatLng mockLocation = mock(LatLng.class);
         when(mockLocationManager.getLastLocation()).thenReturn(mockLocation);
 
-        nf.refreshView(LOCATION_MEDIUM_CHANGED);
+        try {
+            nf.refreshView(PERMISSION_JUST_GRANTED);
+        } catch (NullPointerException e) {
+            // Is expected
+        }
 
-        Assert.assertNotEquals(null, mockLocation);
+        Assert.assertNotEquals(null, mockLastKnownLocation);
         Assert.assertNotEquals(null, curLatLngField.get(nf));
-        Assert.assertEquals(mockLocation, curLatLngField.get(nf));
-        Assert.assertTrue(true);
-    }
-
-    @Test
-    public void refreshView2() throws Exception {
-        NearbyFragment nf = new NearbyFragment();
-
-        Field lockNearbyViewField = NearbyFragment.class.getDeclaredField("lockNearbyView");
-        lockNearbyViewField.setAccessible(true);
-        lockNearbyViewField.set(nf, true);
-
-        System.out.println("\n-----------\n" + lockNearbyViewField.get(nf));
-
-        nf.refreshView(PERMISSION_JUST_GRANTED);
-        // TODO
-        Assert.assertTrue(true);
+        Assert.assertEquals(mockLastKnownLocation, curLatLngField.get(nf));
     }
 }

@@ -2,7 +2,6 @@ package fr.free.nrw.commons.ui.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -93,8 +92,10 @@ public class CustomEditText extends EditText {
 
                     if (x <= 0)
                         x = actionX;
+
                     if (y <= 0)
                         y = actionY;
+
 
                     // Creates square from the smallest value
                     if (x < y) {
@@ -152,6 +153,7 @@ public class CustomEditText extends EditText {
 
                 if (y <= 0)
                     y = actionY;
+
 
                 // If drawble bounds contains the x and y points then move ahead.
                 if (bounds.contains(x, y) && clickListener != null) {
