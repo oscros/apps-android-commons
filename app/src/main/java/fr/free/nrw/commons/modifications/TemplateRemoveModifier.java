@@ -49,7 +49,7 @@ public class TemplateRemoveModifier extends PageModifier {
             Matcher closeMatch = PATTERN_TEMPLATE_CLOSE.matcher(pageContents);
 
             BraceAndIndex braceAndIndex = new BraceAndIndex();
-            braceAndIndex = changeBraceCount(braceCount, curIndex, openMatch, closeMatch, pageContents);
+            braceAndIndex = changeBraceCount(braceCount, curIndex, startIndex, openMatch, closeMatch, pageContents);
 
             braceCount = braceAndIndex.getBraceCount();
             curIndex = braceAndIndex.getCurIndex();
@@ -74,7 +74,7 @@ public class TemplateRemoveModifier extends PageModifier {
      * @param pageContents string with contents of the page
      * @return braceAndIndex with updated braceCount and curIndex
      */
-    public BraceAndIndex changeBraceCount(int braceCount, int curIndex, Matcher openMatch, Matcher closeMatch, String pageContents){
+    public BraceAndIndex changeBraceCount(int braceCount, int curIndex, int startIndex, Matcher openMatch, Matcher closeMatch, String pageContents){
       BraceAndIndex braceAndIndex = new BraceAndIndex();
       while (curIndex < pageContents.length()) {
           boolean openFound = openMatch.find(curIndex);
@@ -118,7 +118,7 @@ public class TemplateRemoveModifier extends PageModifier {
         this.curIndex = value;
       }
 
-      public void getCurIndex(){
+      public int getCurIndex(){
         return this.curIndex;
       }
 
@@ -126,7 +126,7 @@ public class TemplateRemoveModifier extends PageModifier {
         this.braceCount = value;
       }
 
-      public void getBraceCount(){
+      public int getBraceCount(){
         return this.braceCount;
       }
     }
