@@ -165,7 +165,7 @@ public class ImageUtils {
      * @param b blue color value
      * @return largest RGB value
      */
-    public double maxRGB(int r, int g, int b){
+    public static double maxRGB(int r, int g, int b){
       int secondMax = r > g ? r : g;
       double max = (secondMax > b ? secondMax : b) / 255.0;
       return max;
@@ -178,7 +178,7 @@ public class ImageUtils {
      * @param b blue color value
      * @return smallest RGB value
      */
-    public double minRGB(int r, int g, int b){
+    public static double minRGB(int r, int g, int b){
       int secondMin = r < g ? r : g;
       double min = (secondMin < b ? secondMin : b) / 255.0;
       return min;
@@ -192,7 +192,7 @@ public class ImageUtils {
      * @param numberOfBrightPixels the number of medium bright pixels
      * @return numberOfBrightPixels or numberOfBrightPixels + 1 if conditions met
      */
-    public int findBrightPixel(int luminance, int highBrightnessLuminance, int numberOfBrightPixels){
+    public static int findBrightPixel(double luminance, int highBrightnessLuminance, int numberOfBrightPixels){
       if (!(luminance < highBrightnessLuminance)) {
         numberOfBrightPixels++;
       }
@@ -208,7 +208,7 @@ public class ImageUtils {
      * @param numberOfMediumBrightnessPixels the number of medium bright pixels
      * @return numberOfMediumBrightnessPixels or numberOfMediumBrightnessPixels + 1 if conditions met
      */
-    public int findMediumBrightPixel(int luminance, int highBrightnessLuminance, int mediumBrightnessLuminance, int numberOfMediumBrightnessPixels){
+    public static int findMediumBrightPixel(double luminance, int highBrightnessLuminance, int mediumBrightnessLuminance, int numberOfMediumBrightnessPixels){
       if (luminance < highBrightnessLuminance) {
           if (luminance > mediumBrightnessLuminance) {
               numberOfMediumBrightnessPixels++;
