@@ -115,6 +115,11 @@ public class NearbyFragmentTest {
         Assert.assertEquals(mockLastKnownLocation, curLatLngField.get(nf));
     }
 
+    /**
+     * Checks whether {@link NearbyFragment#updateMapFragment(boolean, boolean, LatLng, NearbyController.NearbyPlacesInfo) updateMapFragment}
+     * correctly calls hideProgressBar when it is supposed to.
+     * @throws Exception if the field names are inappropriate.
+     */
     @Test
     public void updateMapFragment1() throws Exception {
         NearbyMapFragment mockNearbyMapFragment = mock(NearbyMapFragment.class);
@@ -145,6 +150,11 @@ public class NearbyFragmentTest {
         Mockito.verify(nf).hideProgressBar();
     }
 
+    /**
+     * Checks whether {@link NearbyFragment#updateMapFragment(boolean, boolean, LatLng, NearbyController.NearbyPlacesInfo) updateMapFragment}
+     * correctly calls updateMapSignificantlyForCurrentLocation from NearbyMapFragment when it is supposed to.
+     * @throws Exception if the field names are inappropriate.
+     */
     @Test
     public void updateMapFragment2() throws Exception {
         NearbyMapFragment mockNearbyMapFragment = mock(NearbyMapFragment.class);
