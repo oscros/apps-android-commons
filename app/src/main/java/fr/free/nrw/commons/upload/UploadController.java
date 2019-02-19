@@ -102,6 +102,10 @@ public class UploadController {
     /**
      * Starts a new upload task.
      *
+     * Starts a new upload task and tries to set info for the task.
+     * It takes a parameter ‘contribution’ and tries to set the creator, description, license, data length, tag and date created properties on it.
+     * It will also start an asynchronous task in the background to upload it. This function does not return anything
+     *
      * @param contribution the contribution object
      * @param onComplete   the progress tracker
      */

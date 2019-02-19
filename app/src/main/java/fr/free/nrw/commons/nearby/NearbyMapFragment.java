@@ -387,7 +387,11 @@ public class NearbyMapFragment extends DaggerFragment {
     }
 
     /**
-     * Sets click listeners of FABs, and 2 bottom sheets
+     * Sets click listeners of FABs, and 2 bottom sheets.
+     *
+     * This method sets click listeners on different view elements.
+     * These elements are fabPlus, bottomSheetDetails, fabRecenter, bottomSheetDetailsBehavior, bottomSheetListBehavior and title.
+     * The function does not return anything.
      */
     public void setListeners() {
         fabPlus.setOnClickListener(view -> {
