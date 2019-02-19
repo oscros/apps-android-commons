@@ -104,6 +104,8 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
     private boolean populateForCurrentLocation = false;
     private boolean isNetworkErrorOccured = false;
 
+    public static boolean[] testCoverage;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -253,12 +255,17 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
      * @param locationChangeType defines if location changed significantly or slightly
      */
     public void refreshView(LocationServiceManager.LocationChangeType locationChangeType) {
+        testCoverage = new boolean[16];
         Timber.d("Refreshing nearby places");
+
+        testCoverage[0] = true;
         if (lockNearbyView) {
+            testCoverage[1] = true;
             return;
         }
 
         if (!NetworkUtils.isInternetConnectionEstablished(getActivity())) {
+            testCoverage[2] = true;
             hideProgressBar();
             return;
         }
@@ -270,6 +277,10 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
                 && !locationChangeType.equals(MAP_UPDATED)) { //refresh view only if location has changed
             // Two exceptional cases to refresh nearby map manually.
             if (!onOrientationChanged) {
+                testCoverage[3] = true;
+                testCoverage[4] = true;
+                testCoverage[5] = true;
+                testCoverage[6] = true;
                 return;
             }
 
@@ -277,10 +288,12 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
         curLatLng = lastLocation;
 
         if (locationChangeType.equals(PERMISSION_JUST_GRANTED)) {
+            testCoverage[7] = true;
             curLatLng = lastKnownLocation;
         }
 
         if (curLatLng == null) {
+            testCoverage[8] = true;
             Timber.d("Skipping update of nearby places as location is unavailable");
             return;
         }
@@ -294,6 +307,10 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
                 || locationChangeType.equals(PERMISSION_JUST_GRANTED)
                 || locationChangeType.equals(MAP_UPDATED)
                 || onOrientationChanged) {
+            testCoverage[9] = true;
+            testCoverage[10] = true;
+            testCoverage[11] = true;
+            testCoverage[12] = true;
             progressBar.setVisibility(View.VISIBLE);
 
             //TODO: This hack inserts curLatLng before populatePlaces is called (see #1440). Ideally a proper fix should be found
@@ -314,14 +331,20 @@ public class NearbyFragment extends CommonsDaggerSupportFragment
 
         } else if (locationChangeType
                 .equals(LOCATION_SLIGHTLY_CHANGED)) {
+            testCoverage[13] = true;
             String gsonCurLatLng = gson.toJson(curLatLng);
             bundle.putString("CurLatLng", gsonCurLatLng);
             updateMapFragment(false,true, null, null);
         }
 
         if (nearbyMapFragment != null && nearbyMapFragment.searchThisAreaButton != null) {
+            testCoverage[14] = true;
+            testCoverage[15] = true;
             nearbyMapFragment.searchThisAreaButton.setVisibility(View.GONE);
         }
+
+        for (int i = 0; i < testCoverage.length; i++)
+            System.out.println("Branch " + i + " reached: " + testCoverage[i]);
     }
 
     /**
