@@ -29,6 +29,15 @@ public class TemplateRemoveModifier extends PageModifier {
         this.params = data;
     }
 
+
+    /**
+     * Modifies a page with Wikitext normalizing rules,
+     * i.e. adding curly braces in certain points and removing trailing whitespace
+     * @param pageName unused
+     * @param pageContents the stirng to be modified
+     * @return pageContents, might be modified if the matcher in the while loop
+     * found a specific pattern in pageContents
+     */
     @Override
     public String doModification(String pageName, String pageContents) {
         String templateRawName = params.optString(PARAM_TEMPLATE_NAME);

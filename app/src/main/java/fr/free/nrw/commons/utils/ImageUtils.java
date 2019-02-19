@@ -115,6 +115,16 @@ public class ImageUtils {
         return distance >= 1000;
     }
 
+    /**
+     * This function takes a bitmap object as a parameter and evaluates if
+     * the bitmap is a dark or light image, and then returns true or false.
+     * Two for loops are used to go through each pixel of the bitmap and
+     * depending on the RGB value of the pixel it is classified as either bright, mediumbright or dark.
+     * If there is enough bright or mediumbright pixels(different thresholds) the method returns false, otherwise true
+     * @param bitmap the bitmap of the image to check
+     * @return false if the number of bright/mediumbright pixels exceed their
+     * respective thresholds, otherwise false
+     */
     public static boolean checkIfImageIsDark(Bitmap bitmap) {
         if (bitmap == null) {
             Timber.e("Expected bitmap was null");
